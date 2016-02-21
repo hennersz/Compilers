@@ -11,3 +11,56 @@ parser code {:
     syntaxErrors = true;
   }
 :}
+
+// Terminals
+// Primitives
+terminal BOOL, INT, RAT, FLOAT, CHAR;
+
+// Bool operators
+terminal NOT, AND, OR;
+
+// Arithmetic operators
+terminal PLUS, MINUS, TIMES, DIV, POW;
+
+// Comparisons
+terminal LTHAN, LTHANEQ, EQUALS, NEQUALS;
+
+// Aggregate keywords
+terminal DICT, SEQ, TOP;
+
+// Operations on Aggregate
+terminal APPEND, LEN, IN;
+
+// Declarations
+terminal TDEF, FDEF, ALIAS;
+
+// IO Functions
+terminal READ, PRINT;
+
+// Control flow
+terminal IF, ELIF, ELSE, THEN, ENDIF, WHILE, DO, ENDDO, FORALL;
+
+// Return statement
+terminal RETURN;
+
+// Literals
+terminal BOOL_LIT, CHAR_LIT, INT_LIT, RAT_LIT, FLOAT_LIT, STR_LIT;
+
+// Identifier
+terminal ID;
+
+// Other
+terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL;
+
+// Non Terminals
+// TODO:
+
+
+// Precedences
+precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
+precedence right POW, IN, ASSIGN;
+precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS
+
+
+// The context free grammar
+// TODO
