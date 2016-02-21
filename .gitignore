@@ -1,0 +1,10 @@
+# Compiled files
+bin/
+
+# Lexer java file
+src/Lexer.java
+src/Lexer.java~
+
+# Parser java file
+src/Parser.java
+src/sym.java
