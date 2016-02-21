@@ -1,0 +1,113 @@
+import java_cup.runtime.*;
+import java.util.ArrayList;
+
+scan with {: return lexer.next_token(); :};
+
+parser code {:
+
+  private boolean debug = false;
+  public boolean  debug()         {return debug;}
+  public void     debug(boolean b){debug = b;}
+
+  static class Node {
+    public ArrayList<Node> children;
+    private static int globalCounter = 0;
+
+    public int counter;
+    private Object value;
+
+    public Node(Object value){
+      Node.globalCounter += 1;
+      this.counter = Node.globalCounter;
+      this.value = value;
+      this.children = new ArrayList<Node>();
+    }
+
+    public void addChild(Node n){ children.add(n); }
+
+    public String toString(){
+      String ret = "";
+      ret += String.format("%d [label=\"%s\"];\n",
+                            counter, value.toString());
+      for(Node n: children){
+        ret += String.format("%d -> %d;\n", this.counter, n.counter);
+        ret += n.toString();
+      }
+      return ret;
+    }
+  }
+
+  private Lexer lexer;
+
+  public Parser(Lexer lex) {
+    super(lex);
+    lexer = lex;
+  }
+
+:};
+
+// Do something with ILLEGAL_CHARARCTER or drop it.
+terminal INTEGER, IDENTIFIER, LET, EQUAL, SEMICOL, PLUS, MINUS, MULT, DIV;
+terminal LPAREN, RPAREN;
+terminal BADCHAR;
+
+nonterminal statements, statement, top_level;
+nonterminal let_bind, full_exp, simple_exp, operator;
+
+precedence left PLUS, MINUS;
+precedence left DIV, MULT;
+
+top_level ::= statements:ss {:
+                if(debug()) System.out.println((Node)ss);
+              :}
+            ;
+
+statements ::= statements:ss statement:s {:
+                  Node n = (Node)ss;
+                  n.addChild((Node)s);
+                  RESULT = n;
+               :}
+             | /* empty */ {:
+                  RESULT = new Node("Statements");
+               :}
+             ;
+
+statement ::= let_bind:s {:
+                RESULT = (Node)s;
+              :}
+            | full_exp:s {:
+                RESULT = (Node)s;
+              :}
+            ;
+
+full_exp ::= simple_exp:e SEMICOL {: RESULT = (Node)e; :};
+
+simple_exp ::= INTEGER:i    {: RESULT = new Node(i); :}
+             | IDENTIFIER:i {: RESULT = new Node(i); :}
+             | simple_exp:e1 operator:o simple_exp:e2 {:
+                  Node n = (Node)o;
+                  n.addChild((Node)e1);
+                  n.addChild((Node)e2);
+                  RESULT = n;
+               :}
+             | LPAREN simple_exp:e RPAREN {:
+                 Node n = new Node("parens");
+                 n.addChild(new Node("("));
+                 n.addChild((Node)e);
+                 n.addChild(new Node(")"));
+                 RESULT = (Node)e;
+               :}
+             ;
+
+operator ::= PLUS  {: RESULT = new Node("+"); :}
+           | MINUS {: RESULT = new Node("-"); :}
+           | MULT  {: RESULT = new Node("*"); :}
+           | DIV   {: RESULT = new Node("/"); :}
+           ;
+
+let_bind ::= LET IDENTIFIER:i EQUAL full_exp:e {:
+               Node n = new Node("LET");
+               n.addChild(new Node(i));
+               n.addChild((Node)e);
+               RESULT = n;
+             :};
