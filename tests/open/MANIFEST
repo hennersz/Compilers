@@ -1,0 +1,6 @@
+Public test sources for Part I of the Compilers Project
+
+The p-* files are postive tests cases, ones your parser should parse correctly,
+printing "parsing successful" on a single line;  the n-* files are negative
+tests cases, ones on which your parser should fail, correctly specifying the
+line and the column within that line in which the syntax error occurs.
