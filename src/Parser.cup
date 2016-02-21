@@ -1,10 +1,13 @@
 import java_cup.runtime.*;
 import java.util.ArrayList;
 
-scan with {: return lexer.next_token(); :};
-
 parser code {:
-:}
+  public Boolean syntaxErrors = false;
 
-action code {:
+  public void syntax_error(Symbol current_token) {
+    report_error("Syntax error at line " + (current_token.left+1) + ", column "
+        + current_token.right, null
+    );
+    syntaxErrors = true;
+  }
 :}
