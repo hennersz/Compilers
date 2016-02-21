@@ -73,7 +73,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
 
   // Comparisons (Does it include greater than?)
   "<"                   { return symbol(sym.LTHAN); }
-  "<="                  { return symbol(sym.THANEQ); }
+  "<="                  { return symbol(sym.LTHANEQ); }
   "=="                  { return symbol(sym.EQUALS); }
   "!="                  { return symbol(sym.NEQUALS); }
 
@@ -147,7 +147,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
 <STRING> {
   \\\"                  { string.append('\"'); }
   [^\"]+                { string.append(yytext()); }
-  \"                    { yybegin(YYINITIAL); return symbol(sym.STRING_LIT, string.toString()); }
+  \"                    { yybegin(YYINITIAL); return symbol(sym.STR_LIT, string.toString()); }
 }
 
 [^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn); }
