@@ -7,19 +7,13 @@ import java_cup.runtime.*;
 %line
 %column
 
-%eofval {
-    return sym(sym.EOF);
-%eofval }
-
 %{
   StringBuffer string = new StringBuffer();
 
   private Symbol symbol(int type) {
-    print_lexeme(type, null);
     return new Symbol(type, yyline, yycolumn);
   }
   private Symbol symbol(int type, Object value) {
-    print_lexeme(type, value);
     return new Symbol(type, yyline, yycolumn, value);
   }
 
@@ -38,7 +32,8 @@ Comment = ({MultiLineComment}|{SingleLineComment})
 
 Letter = [a-zA-Z]
 Digit = [0-9]
-Punctuation = [ \!#$%&()\*\+,-\.\/:;<=>\?@[\\\]\^_`{¦}\~\'\"] // 'Have we escaped everything?
+// Have we escaped everything?
+Punctuation = [ \!#$%&()\*\+,-\.\/:;<=>\?@\[\\\]\^_`{¦}\~ \" \']
 
 Identifier = {Letter}("_"|{Letter}|{Digit})*
 Character = "'"({Letter}|{Digit}|{Punctuation})"'"
