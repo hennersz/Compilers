@@ -1,7 +1,9 @@
 # Compilers
 
 Build the source:
+
  `make`
+
 Run the program to show lexer output:
 
   `java -cp bin:lib/java-cup-11b-runtime.jar Main show-lexing input_file`
