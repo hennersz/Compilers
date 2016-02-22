@@ -33,14 +33,14 @@ Comment = ({MultiLineComment}|{SingleLineComment})
 Letter = [a-zA-Z]
 Digit = [0-9]
 // Have we escaped everything?
-Punctuation = [ \!#$%&()\*\+,-\.\/:;<=>\?@\[\\\]\^_`{¦}\~ \" \']
+Punctuation = [\!#$%&\(\)\*\+,-\.\/:;<=>\?@\[\\\]\^_`\{¦\}\~ \" \']
 
 Identifier = {Letter}("_"|{Letter}|{Digit})*
 Character = "'"({Letter}|{Digit}|{Punctuation})"'"
 Boolean = ("T"|"F")
-Integer = (0|[1-9][0-9]*)
+Integer = "-"?(0|[1-9][0-9]*)
 // Rational can be an integer + What is the underscore?
-Rational = ({Integer}|(({Integer}"_")?{Integer}"/"{Integer}))
+Rational = "-"?({Integer}|(({Integer}"_")?{Integer}"/"{Integer}))
 Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
 
 %state STRING
