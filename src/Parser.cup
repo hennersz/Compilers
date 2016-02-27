@@ -53,8 +53,7 @@ terminal ID;
 terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL;
 
 // Non Terminals
-// TODO:
-
+nonterminal program
 
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
@@ -62,5 +61,4 @@ precedence right POW, IN, ASSIGN;
 precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS
 
 
-// The context free grammar
-// TODO
+program ::= block main block;

@@ -6,6 +6,7 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
+%debug
 
 %{
   StringBuffer string = new StringBuffer();
@@ -19,7 +20,6 @@ import java_cup.runtime.*;
 
 %}
 
-// Declarations
 EndOfLine = \r|\n|\r\n
 InputCharacter = [^\r\n]
 WhiteSpace = {EndOfLine} | [ \t\f]
