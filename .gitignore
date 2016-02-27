@@ -8,3 +8,7 @@ src/Lexer.java~
 # Parser java file
 src/Parser.java
 src/sym.java
+
+# Vim files
+*~
+*.swp
