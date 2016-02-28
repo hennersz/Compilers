@@ -133,14 +133,14 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
 
 
   // Primitive data types
-  {Boolean}             { return symbol(sym.BOOL_LIT); }
+  {Boolean}             { return symbol(sym.BOOL_LIT, Boolean.parseBoolean(yytext())); }
   {Character}           { return symbol(sym.CHAR_LIT); }
-  {Integer}             { return symbol(sym.INT_LIT); }
-  {Rational}            { return symbol(sym.RAT_LIT); }
-  {Float}               { return symbol(sym.FLOAT_LIT); }
+  {Integer}             { return symbol(sym.INT_LIT, Integer.parseInteger(yytext())); }
+  {Rational}            { return symbol(sym.RAT_LIT); } //how do we return the value of the fraction
+  {Float}               { return symbol(sym.FLOAT_LIT, Float.parseFloart(yytext())); }
 
   // Identifier
-  {Identifier}          { return symbol(sym.ID); }
+  {Identifier}          { return symbol(sym.ID, yytext()); }
 
 }
 
