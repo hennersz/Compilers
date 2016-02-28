@@ -26,7 +26,7 @@ terminal PLUS, MINUS, TIMES, DIV, POW;
 terminal LTHAN, LTHANEQ, EQUALS, NEQUALS;
 
 // Aggregate keywords
-terminal DICT, SEQ, TOP;
+terminal DICT, SEQ, TOP, STR;
 
 // Operations on Aggregate
 terminal APPEND, LEN, IN;
@@ -53,12 +53,69 @@ terminal ID;
 terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL;
 
 // Non Terminals
-nonterminal program
+nonterminal program, block, function, declaration;
+
+nonterminal primarytype;
 
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
 precedence right POW, IN, ASSIGN;
 precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS
 
+// Main logic
 
-program ::= block main block;
+program ::= begin main begin;
+
+begin ::= funcdeclaration begin 
+    | TDEF ID //TODO 
+    | vardeclaration begin
+    |
+    ;
+
+
+fundeclaration = FDEF type ID LPAREN paramlist RPAREN LBRACE block RBRACE SEMICOL;
+
+// Variable declarations
+vardeclaration ::= type ID init; 
+
+type ::= primarytype 
+       | aggregatetype
+       ;
+
+// This is used because we don't want declarations like
+// top x = 5, since we use top only in dict/seq
+aggtype ::= type 
+          | top
+          ;
+
+primarytype ::=  BOOL | INT | RAT | FLOAT | CHAR;
+
+aggregatetype ::= dict | seq | STR ;
+
+dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR;
+
+seq ::= SEQ LTHAN aggtype RANGBR;
+
+initialization ::= primaryinitialization | aggregateinitialization;
+
+// Initialization and assignment
+primaryinitialization ::= BOOL_LIT
+                        | CHAR_LIT
+                        | INT_LIT
+                        | RAT_LIT
+                        | FLOAT_LIT
+                        ;
+
+aggregateinitialization ::= dictinitialiazation
+                          | seqinitialization
+                          ;
+
+dictinitialization ::= LTHAN agglist RANGBR;
+
+seqinitialization ::=  LBRACK agglist RANGBR;
+
+agglist ::= initialization COMMA agglist 
+           | initialization 
+           |
+           ;
+
