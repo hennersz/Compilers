@@ -108,7 +108,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
   "forall"              { return symbol(sym.FORALL); }
 
   // Return statement
-  "return"              { return symbol(sym.RET); }
+  "return"              { return symbol(sym.RETURN); }
 
   // Main Function
   "main"                { return symbol(sym.MAIN); }

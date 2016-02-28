@@ -50,35 +50,48 @@ terminal BOOL_LIT, CHAR_LIT, INT_LIT, RAT_LIT, FLOAT_LIT, STR_LIT;
 terminal ID;
 
 // Other
-terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL;
+terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN;
 
 // Non Terminals
-nonterminal program, block, function, declaration;
-
-nonterminal primarytype;
+nonterminal program, begin, main;
+nonterminal funcdeclaration, vardeclaration, typedeclaration;
+nonterminal type, paramlist, block, value;
+nonterminal primarytype, aggregatetype, dict, seq;
+nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue; 
+nonterminal vallisthelp, vallist, dictlisthelp, dictlist;
 
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
 precedence right POW, IN, ASSIGN;
-precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS
+precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS;
 
 // Main logic
 
+start with program;
+
 program ::= begin main begin;
 
-begin ::= funcdeclaration begin 
-    | TDEF ID //TODO 
-    | vardeclaration begin
-    |
-    ;
+main ::= ;
+
+/* begin ::= funcdeclaration begin */ 
+/*     | typedeclaration begin //TODO */
+/*     | vardeclaration begin */
+/*     | */
+/*     ; */
+
+begin ::= ;
 
 // Function declarations
 //-----------------------------
-fundeclaration = FDEF type ID LPAREN paramlist RPAREN LBRACE block RBRACE SEMICOL;
+funcdeclaration ::= FDEF type ID LPAREN paramlist RPAREN LBRACE block RBRACE SEMICOL;
+
+// Type declaration
+//-----------------------------
+typedeclaration ::= ;
 
 // Variable declarations
 //-----------------------------
-vardeclaration ::= type ID init; 
+vardeclaration ::= type ID value; 
 
 type ::= primarytype 
        | aggregatetype
@@ -87,7 +100,7 @@ type ::= primarytype
 // This is used because we don't want declarations like
 // top x = 5, since we use top only in dict/seq
 aggtype ::= type 
-          | top
+          | TOP
           ;
 
 primarytype ::=  BOOL | INT | RAT | FLOAT | CHAR;
@@ -120,14 +133,14 @@ dictvalue ::= LTHAN dictlist RANGBR;
 seqvalue ::=  LBRACK vallist RANGBR;
 
 vallisthelp ::= value
-          | agglist COMMA value 
+          | vallist COMMA value 
           ;
 vallist ::= vallisthelp
           | 
           ;
 
 dictlisthelp ::= value COL value
-           | value COL value dictlist
+           | dictlist COMMA value COL value
            ;
 
 dictlist ::= dictlisthelp
