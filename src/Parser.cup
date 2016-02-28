@@ -72,10 +72,12 @@ begin ::= funcdeclaration begin
     |
     ;
 
-
+// Function declarations
+//-----------------------------
 fundeclaration = FDEF type ID LPAREN paramlist RPAREN LBRACE block RBRACE SEMICOL;
 
 // Variable declarations
+//-----------------------------
 vardeclaration ::= type ID init; 
 
 type ::= primarytype 
@@ -96,26 +98,27 @@ dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR;
 
 seq ::= SEQ LTHAN aggtype RANGBR;
 
-initialization ::= primaryinitialization | aggregateinitialization;
+// Initialiazation of variables
+//-----------------------------
+
+value ::= primaryvalue | aggregatevalue;
 
 // Initialization and assignment
-primaryinitialization ::= BOOL_LIT
-                        | CHAR_LIT
-                        | INT_LIT
-                        | RAT_LIT
-                        | FLOAT_LIT
-                        ;
+primaryvalue ::= BOOL_LIT
+                | CHAR_LIT
+                | INT_LIT
+                | RAT_LIT
+                | FLOAT_LIT
+                ;
 
-aggregateinitialization ::= dictinitialiazation
-                          | seqinitialization
-                          ;
+aggregatevalue ::= dictvalue
+                | seqvalue
+                ;
 
-dictinitialization ::= LTHAN agglist RANGBR;
+dictvalue ::= LTHAN agglist RANGBR;
 
-seqinitialization ::=  LBRACK agglist RANGBR;
+seqvalue ::=  LBRACK agglist RANGBR;
 
-agglist ::= initialization COMMA agglist 
-           | initialization 
-           |
-           ;
-
+vallist ::= value
+          | agglist COMMA value 
+          ;
