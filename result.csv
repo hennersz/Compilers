@@ -1,0 +1,200 @@
+Usage: java [-options] class [args...]
+           (to execute a class)
+   or  java [-options] -jar jarfile [args...]
+           (to execute a jar file)
+where options include:
+    -d32	  use a 32-bit data model if available
+    -d64	  use a 64-bit data model if available
+    -server	  to select the "server" VM
+                  The default VM is server,
+                  because you are running on a server-class machine.
+
+
+    -cp <class search path of directories and zip/jar files>
+    -classpath <class search path of directories and zip/jar files>
+                  A : separated list of directories, JAR archives,
+                  and ZIP archives to search for class files.
+    -D<name>=<value>
+                  set a system property
+    -verbose:[class|gc|jni]
+                  enable verbose output
+    -version      print product version and exit
+    -version:<value>
+                  require the specified version to run
+    -showversion  print product version and continue
+    -jre-restrict-search | -no-jre-restrict-search
+                  include/exclude user private JREs in the version search
+    -? -help      print this help message
+    -X            print help on non-standard options
+    -ea[:<packagename>...|:<classname>]
+    -enableassertions[:<packagename>...|:<classname>]
+                  enable assertions with specified granularity
+    -da[:<packagename>...|:<classname>]
+    -disableassertions[:<packagename>...|:<classname>]
+                  disable assertions with specified granularity
+    -esa | -enablesystemassertions
+                  enable system assertions
+    -dsa | -disablesystemassertions
+                  disable system assertions
+    -agentlib:<libname>[=<options>]
+                  load native agent library <libname>, e.g. -agentlib:hprof
+                  see also, -agentlib:jdwp=help and -agentlib:hprof=help
+    -agentpath:<pathname>[=<options>]
+                  load native agent library by full pathname
+    -javaagent:<jarpath>[=<options>]
+                  load Java programming language agent, see java.lang.instrument
+    -splash:<imagepath>
+                  show splash screen with specified image
+See http://www.oracle.com/technetwork/java/javase/documentation/index.html for more details.
+Usage: java [-options] class [args...]
+           (to execute a class)
+   or  java [-options] -jar jarfile [args...]
+           (to execute a jar file)
+where options include:
+    -d32	  use a 32-bit data model if available
+    -d64	  use a 64-bit data model if available
+    -server	  to select the "server" VM
+                  The default VM is server,
+                  because you are running on a server-class machine.
+
+
+    -cp <class search path of directories and zip/jar files>
+    -classpath <class search path of directories and zip/jar files>
+                  A : separated list of directories, JAR archives,
+                  and ZIP archives to search for class files.
+    -D<name>=<value>
+                  set a system property
+    -verbose:[class|gc|jni]
+                  enable verbose output
+    -version      print product version and exit
+    -version:<value>
+                  require the specified version to run
+    -showversion  print product version and continue
+    -jre-restrict-search | -no-jre-restrict-search
+                  include/exclude user private JREs in the version search
+    -? -help      print this help message
+    -X            print help on non-standard options
+    -ea[:<packagename>...|:<classname>]
+    -enableassertions[:<packagename>...|:<classname>]
+                  enable assertions with specified granularity
+    -da[:<packagename>...|:<classname>]
+    -disableassertions[:<packagename>...|:<classname>]
+                  disable assertions with specified granularity
+    -esa | -enablesystemassertions
+                  enable system assertions
+    -dsa | -disablesystemassertions
+                  disable system assertions
+    -agentlib:<libname>[=<options>]
+                  load native agent library <libname>, e.g. -agentlib:hprof
+                  see also, -agentlib:jdwp=help and -agentlib:hprof=help
+    -agentpath:<pathname>[=<options>]
+                  load native agent library by full pathname
+    -javaagent:<jarpath>[=<options>]
+                  load Java programming language agent, see java.lang.instrument
+    -splash:<imagepath>
+                  show splash screen with specified image
+See http://www.oracle.com/technetwork/java/javase/documentation/index.html for more details.
+tests//open/n-alice.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
+tests//open/n-decl.s
+Syntax error at line 1, column 5Couldn't repair and continue parse at character 0 of input
+tests//open/n-fib.s
+Syntax error at line 6, column 15Couldn't repair and continue parse at character 5 of input
+tests//open/n-funcParamTypeError0.s
+Syntax error at line 1, column 5Couldn't repair and continue parse at character 0 of input
+tests//open/n-main1.s
+Syntax error at line 7, column 2Couldn't repair and continue parse at character 6 of input
+tests//open/n-multiple-assignment.s
+Syntax error at line 2, column 2Couldn't repair and continue parse at character 1 of input
+tests//open/n-nestedTypeDef0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/n-no-main.s
+Syntax error at line 3, column 5Couldn't repair and continue parse at character 2 of input
+tests//open/p-adt.s
+Syntax error at line 2, column 20Couldn't repair and continue parse at character 1 of input
+tests//open/p-alice.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
+tests//open/p-elif.s
+Syntax error at line 2, column 9Couldn't repair and continue parse at character 1 of input
+tests//open/p-emptyDict.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-emptySeq.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-fib.s
+Syntax error at line 6, column 5Couldn't repair and continue parse at character 5 of input
+tests//open/p-fp0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-function0.s
+Syntax error at line 3, column 2Couldn't repair and continue parse at character 2 of input
+tests//open/p-ifthenelse0.s
+Syntax error at line 1, column 10Couldn't repair and continue parse at character 0 of input
+tests//open/p-ifthenelse1.s
+Syntax error at line 1, column 10Couldn't repair and continue parse at character 0 of input
+tests//open/p-main.s
+parsing successful
+tests//open/p-rat0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-return0.s
+parsing successful
+tests//open/p-return1.s
+parsing successful
+tests//open/p-reverse.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-sequences.s
+Syntax error at line 1, column 0Couldn't repair and continue parse at character 0 of input
+tests//open/p-tdef0.s
+Syntax error at line 4, column 22Couldn't repair and continue parse at character 3 of input
+tests//open/p-while.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
+tests//open/n-alice.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
+tests//open/n-decl.s
+Syntax error at line 1, column 5Couldn't repair and continue parse at character 0 of input
+tests//open/n-fib.s
+Syntax error at line 6, column 15Couldn't repair and continue parse at character 5 of input
+tests//open/n-funcParamTypeError0.s
+Syntax error at line 1, column 5Couldn't repair and continue parse at character 0 of input
+tests//open/n-main1.s
+Syntax error at line 7, column 2Couldn't repair and continue parse at character 6 of input
+tests//open/n-multiple-assignment.s
+Syntax error at line 2, column 2Couldn't repair and continue parse at character 1 of input
+tests//open/n-nestedTypeDef0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/n-no-main.s
+Syntax error at line 3, column 5Couldn't repair and continue parse at character 2 of input
+tests//open/p-adt.s
+Syntax error at line 2, column 20Couldn't repair and continue parse at character 1 of input
+tests//open/p-alice.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
+tests//open/p-elif.s
+Syntax error at line 2, column 9Couldn't repair and continue parse at character 1 of input
+tests//open/p-emptyDict.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-emptySeq.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-fib.s
+Syntax error at line 6, column 5Couldn't repair and continue parse at character 5 of input
+tests//open/p-fp0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-function0.s
+Syntax error at line 3, column 2Couldn't repair and continue parse at character 2 of input
+tests//open/p-ifthenelse0.s
+Syntax error at line 1, column 10Couldn't repair and continue parse at character 0 of input
+tests//open/p-ifthenelse1.s
+Syntax error at line 1, column 10Couldn't repair and continue parse at character 0 of input
+tests//open/p-main.s
+parsing successful
+tests//open/p-rat0.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-return0.s
+parsing successful
+tests//open/p-return1.s
+parsing successful
+tests//open/p-reverse.s
+Syntax error at line 2, column 1Couldn't repair and continue parse at character 1 of input
+tests//open/p-sequences.s
+Syntax error at line 1, column 0Couldn't repair and continue parse at character 0 of input
+tests//open/p-tdef0.s
+Syntax error at line 4, column 22Couldn't repair and continue parse at character 3 of input
+tests//open/p-while.s
+Syntax error at line 1, column 7Couldn't repair and continue parse at character 0 of input
