@@ -73,11 +73,11 @@ program ::= begin main begin;
 
 main ::= ;
 
-/* begin ::= funcdeclaration begin */ 
-/*     | typedeclaration begin //TODO */
-/*     | vardeclaration begin */
-/*     | */
-/*     ; */
+//begin ::= funcdeclaration begin  
+//     | typedeclaration begin //TODO 
+//     | vardeclaration begin 
+//     | 
+//     ; 
 
 begin ::= ;
 
@@ -91,7 +91,9 @@ typedeclaration ::= ;
 
 // Variable declarations
 //-----------------------------
-vardeclaration ::= type ID value; 
+vardeclaration ::= type ID value
+                 | type ID
+                 ;
 
 type ::= primarytype 
        | aggregatetype
@@ -104,7 +106,7 @@ aggtype ::= type
           ;
 
 primarytype ::=  BOOL | INT | RAT | FLOAT | CHAR;
-
+    
 aggregatetype ::= dict | seq | STR ;
 
 dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR;
