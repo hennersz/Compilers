@@ -100,8 +100,8 @@ seq ::= SEQ LTHAN aggtype RANGBR;
 
 // Initialiazation of variables
 //-----------------------------
-
-value ::= primaryvalue | aggregatevalue;
+// ID because you can have [ID]
+value ::= primaryvalue | aggregatevalue | ID;
 
 // Initialization and assignment
 primaryvalue ::= BOOL_LIT
@@ -115,10 +115,22 @@ aggregatevalue ::= dictvalue
                 | seqvalue
                 ;
 
-dictvalue ::= LTHAN agglist RANGBR;
+dictvalue ::= LTHAN dictlist RANGBR;
 
-seqvalue ::=  LBRACK agglist RANGBR;
+seqvalue ::=  LBRACK vallist RANGBR;
 
-vallist ::= value
+vallisthelp ::= value
           | agglist COMMA value 
           ;
+vallist ::= vallisthelp
+          | 
+          ;
+
+dictlisthelp ::= value COL value
+           | value COL value dictlist
+           ;
+
+dictlist ::= dictlisthelp
+           | 
+           ;
+
