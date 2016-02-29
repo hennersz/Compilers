@@ -58,10 +58,11 @@ nonterminal funcdeclaration, vardeclaration, typedeclaration;
 nonterminal type, paramlist, paramlisthelper, block, block2;
 nonterminal primarytype, aggregatetype, dict, seq;
 nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue; 
-nonterminal dictlisthelp, dictlist;
+nonterminal dictlisthelp, dictlist, exprh;
 nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
 nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
 nonterminal returnstat, read, print, accessor, iostat, alias, functype;
+nonterminal vardeclarationh, multipledeclarations, varempptydeclaration;
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
 precedence right POW, IN, ASSIGN;
@@ -82,14 +83,14 @@ begin ::= vardeclaration SEMICOL begin
         |
         ;
 
-block ::= assignment SEMICOL block2
+block ::= exprh SEMICOL block2
+        | assignment SEMICOL block2
         | vardeclaration SEMICOL block2
         | ifblock block2
         | whileblock block2
         | forblock block2
         | returnstat SEMICOL block2
         | iostat SEMICOL block2
-        | funccall SEMICOL block2
         | alias SEMICOL block2
         | typedeclaration SEMICOL block2
         ;
@@ -109,7 +110,9 @@ paramlist ::= paramlisthelper
             ;
 
 paramlisthelper ::= paramlisthelper COMMA type ID
+                  | paramlisthelper COMMA ID ID
                   | type ID
+                  | ID ID
                   ;
 
 
@@ -124,9 +127,21 @@ alias ::= ALIAS ID ID
 
 // Variable declarations
 //-----------------------------
-vardeclaration ::= type ID ASSIGN expr 
-                 | type ID
+// Not using type because of aliases
+vardeclaration ::= varempptydeclaration
+                 | vardeclarationh multipledeclarations;
+
+varempptydeclaration ::= type ID
+                       | ID ID
+                       ;
+
+vardeclarationh ::= ID ID ASSIGN expr 
+                 | type ID ASSIGN expr
                  ; 
+
+multipledeclarations ::= COMMA expr multipledeclarations
+                       |
+                       ;
 // TODO: Use this
 assignment ::= accessor ASSIGN expr;
 
@@ -142,11 +157,13 @@ aggtype ::= type
 
 primarytype ::=  BOOL | INT | RAT | FLOAT | CHAR;
 
-aggregatetype ::= dict | seq | STR ;
+aggregatetype ::= dict | seq | STR;
 
-dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR;
+dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR
+       | DICT LTHAN ID COMMA ID RANGBR;
 
-seq ::= SEQ LTHAN aggtype RANGBR;
+seq ::= SEQ LTHAN aggtype RANGBR
+      | SEQ LTHAN ID RANGBR;
 
 // Initialiazation of variables
 //-----------------------------
@@ -194,7 +211,7 @@ exprlist ::= exprlisthelp | ;
 exprlisthelp ::= expr
                | exprlisthelp COMMA expr;
 
-expr ::= NOT expr
+exprh ::=  NOT expr
        | expr AND expr
        | expr OR expr
        | expr PLUS expr
@@ -214,9 +231,12 @@ expr ::= NOT expr
        | MINUS expr
        | LPAREN expr RPAREN
        | funccall
+       | primaryvalue // Not aggr because it would be ambiguous with seqslice
+       ;
+
+expr ::= exprh 
        | seqslice
        | accessalias
-       | primaryvalue // Not aggr because it would be ambiguous with seqslice
        ;
 
 // If else statements
