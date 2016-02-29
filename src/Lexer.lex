@@ -42,10 +42,10 @@ Identifier = {Letter}("_"|{Letter}|{Digit})*
 Character = "'"({Letter}|{Digit}|{Punctuation})"'"
 Boolean = ("T"|"F")
 // We don't want negatives here, parser takes care of that
-Integer = (0|[1-9][0-9]*)
+Integer = (0|-?[1-9][0-9]*)
 // Rational can be an integer + What is the underscore?
-Rational = ({Integer}|(({Integer}"_")?{Integer}"/"{Integer}))
-Float = (0|[1-9][0-9]*)"."[0-9]+
+Rational = -?({Integer}"_")?{Integer}"/"{Integer}
+Float = -?(0|[1-9][0-9]*)"."[0-9]+
 
 %state STRING
 
@@ -157,4 +157,4 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   "\""                    { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
 }
 
-[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn); }
+[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn + " "); }
