@@ -147,7 +147,7 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   {Float}               { return symbol(sym.FLOATLIT); }
 
   // Identifier
-  {Identifier}          { return symbol(sym.ID, yytext()); }
+  {Identifier}          { return symbol(sym.ID); }
 
 }
 
