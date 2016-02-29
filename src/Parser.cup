@@ -151,24 +151,24 @@ seq ::= SEQ LTHAN aggtype RANGBR;
 // Initialiazation of variables
 //-----------------------------
 primaryvalue ::= BOOLLIT
-                | CHARLIT
-                | INTLIT
-                | RATLIT
-                | FLOATLIT
-                ;
+               | CHARLIT
+               | INTLIT
+               | RATLIT
+               | FLOATLIT
+               ;
 
 aggregatevalue ::= dictvalue
-                | seqvalue
-                | STRLIT
-                ;
+                 | seqvalue
+                 | STRLIT
+                 ;
 
 dictvalue ::= LBRACE dictlist RBRACE;
 
 seqvalue ::=  LBRACK exprlist RBRACK;
 
 dictlisthelp ::= expr COL expr
-           | dictlisthelp COMMA expr COL expr
-           ;
+               | dictlisthelp COMMA expr COL expr
+               ;
 
 dictlist ::= dictlisthelp
            | 

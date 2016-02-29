@@ -140,11 +140,11 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   "\""                    { string.setLength(0); yybegin(STRING); }
 
   // Primitive data types
-  {Boolean}             { return symbol(sym.BOOL_LIT, Boolean.parseBoolean(yytext())); }
-  {Character}           { return symbol(sym.CHAR_LIT); }
-  {Integer}             { return symbol(sym.INT_LIT, Integer.parseInt(yytext())); }
-  {Rational}            { return symbol(sym.RAT_LIT); } //how do we return the value of the fraction
-  {Float}               { return symbol(sym.FLOAT_LIT, Float.parseFloat(yytext())); }
+  {Boolean}             { return symbol(sym.BOOLLIT); }
+  {Character}           { return symbol(sym.CHARLIT); }
+  {Integer}             { return symbol(sym.INTLIT); }
+  {Rational}            { return symbol(sym.RATLIT); } //how do we return the value of the fraction
+  {Float}               { return symbol(sym.FLOATLIT); }
 
   // Identifier
   {Identifier}          { return symbol(sym.ID, yytext()); }
