@@ -81,6 +81,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
   // Comparisons (Does it include greater than?)
   "<"                   { return symbol(sym.LTHAN); }
   "<="                  { return symbol(sym.LTHANEQ); }
+  ">="                  { return symbol(sym.GTHANEQ); }
   "=="                  { return symbol(sym.EQUALS); }
   "!="                  { return symbol(sym.NEQUALS); }
 
@@ -133,6 +134,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
   ","                   { return symbol(sym.COMMA); }
   ";"                   { return symbol(sym.SEMICOL); }
   ":"                   { return symbol(sym.COL); }
+  "."                   { return symbol(sym.DOT); }
 
   // Start string
   // The reason we do this is because we want to escape
