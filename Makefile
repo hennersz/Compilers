@@ -1,7 +1,7 @@
 LANG = SC
 VERJFLEX = 1.6.1
 VERCUP = 11b
-TESTCASES := $(shell find 'tests/' -name '*.s')
+TESTCASES := $(shell rm -f result.csv && find 'tests/' -name '*.s')
 
 all: bin/$(LANG).class
 
