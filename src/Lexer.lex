@@ -62,7 +62,8 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   "rat"                 { return symbol(sym.RAT); }
   "float"               { return symbol(sym.FLOAT); }
   "char"                { return symbol(sym.CHAR); }
-  "void"                { return symbol(sym.VOID); }
+    "void"                { return symbol(sym.VOID); }
+
   // Bool operators
   "!"                   { return symbol(sym.NOT); }
   "&&"                  { return symbol(sym.AND); }
@@ -141,12 +142,12 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   // Primitive data types
   {Boolean}             { return symbol(sym.BOOLLIT); }
   {Character}           { return symbol(sym.CHARLIT); }
-  {Integer}             { return symbol(sym.INTLIT, Integer.parseInt(yytext())); }
-  {Rational}            { return symbol(sym.RATLIT); } //how do we return the value of the fraction
-  {Float}               { return symbol(sym.FLOATLIT, Float.parseFloat(yytext())); }
+  {Integer}             { return symbol(sym.INTLIT); }
+  {Rational}            { return symbol(sym.RATLIT); }
+  {Float}               { return symbol(sym.FLOATLIT); }
 
   // Identifier
-  {Identifier}          { return symbol(sym.ID, yytext()); }
+  {Identifier}          { return symbol(sym.ID); }
 
 }
 
