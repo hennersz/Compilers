@@ -53,14 +53,14 @@ terminal ID;
 terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN, DOT;
 
 // Non Terminals
-nonterminal program, begin, main;
+nonterminal program, begin, main, assignment;
 nonterminal funcdeclaration, vardeclaration, typedeclaration;
 nonterminal type, paramlist, block, value;
 nonterminal primarytype, aggregatetype, dict, seq;
 nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue; 
 nonterminal dictlisthelp, dictlist;
 nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
-nonterminal accessaggr;
+nonterminal accessaggr, ifblock, elifblock, elseblock;
 
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
@@ -71,16 +71,22 @@ precedence nonassoc NOT, LTHAN, LTHANEQ, GTHANEQ, RANGBR, EQUALS, NEQUALS;
 
 start with program;
 
-program ::= begin;
+program ::= block;
 
 //program ::= begin main begin;
 
-begin ::= vardeclaration SEMICOL  begin | ;
+begin ::= vardeclaration SEMICOL begin | ;
 // begin ::= funcdeclaration begin 
 //    | typedeclaration begin //TODO
 //    | vardeclaration begin
 //   |
 //    ;
+
+block ::= assignment SEMICOL block
+        | vardeclaration SEMICOL block
+        | ifblock block
+        |
+        ;
 
 // Type declaration
 //-----------------------------
@@ -91,6 +97,8 @@ typedeclaration ::= ;
 vardeclaration ::= type ID ASSIGN expr 
                  | type ID
                  ; 
+// TODO: Use this
+assignment ::= ID ASSIGN expr;
 
 type ::= primarytype 
        | aggregatetype
@@ -182,3 +190,13 @@ expr ::= NOT expr
        | primaryvalue // Not aggr because it would be ambiguous with seqslice
        ;
 
+// If else statements
+ifblock ::= IF LPAREN expr RPAREN THEN block elifblock elseblock ENDIF;
+
+elifblock ::= ELIF LPAREN expr RPAREN THEN block elifblock
+            | 
+            ;
+
+elseblock ::= ELSE THEN block
+            |
+            ;
