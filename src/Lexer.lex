@@ -7,6 +7,13 @@ import java_cup.runtime.*;
 %line
 %column
 %debug
+%cupdebug
+
+
+
+%eofval{
+  return symbol(sym.EOF);
+%eofval}
 
 %{
   StringBuffer string = new StringBuffer();
@@ -81,6 +88,7 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
   "dict"                { return symbol(sym.DICT); }
   "seq"                 { return symbol(sym.SEQ); }
   "top"                 { return symbol(sym.TOP); }
+  "string"              { return symbol(sym.STR); }
 
   // Operations on Aggregate
   "::"                  { return symbol(sym.APPEND); }
@@ -129,15 +137,14 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
   // Start string
   // The reason we do this is because we want to escape
   // escaped quotations
-  \"                    { string.setLength(0); yybegin(STRING); }
-
+  "\""                    { string.setLength(0); yybegin(STRING); }
 
   // Primitive data types
-  {Boolean}             { return symbol(sym.BOOL_LIT, Boolean.parseBoolean(yytext())); }
-  {Character}           { return symbol(sym.CHAR_LIT); }
-  {Integer}             { return symbol(sym.INT_LIT, Integer.parseInteger(yytext())); }
-  {Rational}            { return symbol(sym.RAT_LIT); } //how do we return the value of the fraction
-  {Float}               { return symbol(sym.FLOAT_LIT, Float.parseFloart(yytext())); }
+  {Boolean}             { return symbol(sym.BOOLLIT); }
+  {Character}           { return symbol(sym.CHARLIT); }
+  {Integer}             { return symbol(sym.INTLIT, Integer.parseInt(yytext())); }
+  {Rational}            { return symbol(sym.RATLIT); } //how do we return the value of the fraction
+  {Float}               { return symbol(sym.FLOATLIT, Float.parseFloat(yytext())); }
 
   // Identifier
   {Identifier}          { return symbol(sym.ID, yytext()); }
@@ -145,9 +152,9 @@ Float = "-"?(0|[1-9][0-9]*)"."[0-9]+
 }
 
 <STRING> {
-  \\\"                  { string.append('\"'); }
-  [^\"]+                { string.append(yytext()); }
-  \"                    { yybegin(YYINITIAL); return symbol(sym.STR_LIT, string.toString()); }
+  "\\\""                  { string.append('\"'); }
+  [^"\"""\\\""]+          { string.append(yytext()); }
+  "\""                    { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
 }
 
 [^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn); }

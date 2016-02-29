@@ -44,7 +44,7 @@ terminal IF, ELIF, ELSE, THEN, ENDIF, WHILE, DO, ENDDO, FORALL;
 terminal RETURN;
 
 // Literals
-terminal BOOL_LIT, CHAR_LIT, INT_LIT, RAT_LIT, FLOAT_LIT, STR_LIT;
+terminal BOOLLIT, CHARLIT, INTLIT, RATLIT, FLOATLIT, STRLIT;
 
 // Identifier
 terminal ID;
@@ -69,17 +69,16 @@ precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS;
 
 start with program;
 
-program ::= begin main begin;
+program ::= begin;
 
-main ::= ;
+//program ::= begin main begin;
 
-/* begin ::= funcdeclaration begin */ 
-/*     | typedeclaration begin //TODO */
-/*     | vardeclaration begin */
-/*     | */
-/*     ; */
-
-begin ::= ;
+begin ::= vardeclaration SEMICOL  begin | ;
+// begin ::= funcdeclaration begin 
+//    | typedeclaration begin //TODO
+//    | vardeclaration begin
+//   |
+//    ;
 
 // Function declarations
 //-----------------------------
@@ -91,7 +90,9 @@ typedeclaration ::= ;
 
 // Variable declarations
 //-----------------------------
-vardeclaration ::= type ID value; 
+vardeclaration ::= type ID ASSIGN value 
+                 | type ID
+                 ; 
 
 type ::= primarytype 
        | aggregatetype
@@ -117,30 +118,31 @@ seq ::= SEQ LTHAN aggtype RANGBR;
 value ::= primaryvalue | aggregatevalue | ID;
 
 // Initialization and assignment
-primaryvalue ::= BOOL_LIT
-                | CHAR_LIT
-                | INT_LIT
-                | RAT_LIT
-                | FLOAT_LIT
+primaryvalue ::= BOOLLIT
+                | CHARLIT
+                | INTLIT
+                | RATLIT
+                | FLOATLIT
                 ;
 
 aggregatevalue ::= dictvalue
                 | seqvalue
+                | STRLIT
                 ;
 
-dictvalue ::= LTHAN dictlist RANGBR;
+dictvalue ::= LBRACE dictlist RBRACE;
 
-seqvalue ::=  LBRACK vallist RANGBR;
+seqvalue ::=  LBRACK vallist RBRACK;
 
 vallisthelp ::= value
-          | vallist COMMA value 
+          | vallisthelp COMMA value 
           ;
 vallist ::= vallisthelp
           | 
           ;
 
 dictlisthelp ::= value COL value
-           | dictlist COMMA value COL value
+           | dictlisthelp COMMA value COL value
            ;
 
 dictlist ::= dictlisthelp
