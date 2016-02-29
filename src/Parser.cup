@@ -23,7 +23,7 @@ terminal NOT, AND, OR;
 terminal PLUS, MINUS, TIMES, DIV, POW;
 
 // Comparisons
-terminal LTHAN, LTHANEQ, EQUALS, NEQUALS;
+terminal LTHAN, LTHANEQ, GTHANEQ, EQUALS, NEQUALS;
 
 // Aggregate keywords
 terminal DICT, SEQ, TOP, STR;
@@ -44,13 +44,13 @@ terminal IF, ELIF, ELSE, THEN, ENDIF, WHILE, DO, ENDDO, FORALL;
 terminal RETURN;
 
 // Literals
-terminal BOOL_LIT, CHAR_LIT, INT_LIT, RAT_LIT, FLOAT_LIT, STR_LIT;
+terminal BOOLLIT, CHARLIT, INTLIT, RATLIT, FLOATLIT, STRLIT;
 
 // Identifier
 terminal ID;
 
 // Other
-terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN;
+terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN, DOT;
 
 // Non Terminals
 nonterminal program, begin, main;
@@ -58,32 +58,29 @@ nonterminal funcdeclaration, vardeclaration, typedeclaration;
 nonterminal type, paramlist, block, value;
 nonterminal primarytype, aggregatetype, dict, seq;
 nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue; 
-nonterminal vallisthelp, vallist, dictlisthelp, dictlist;
+nonterminal dictlisthelp, dictlist;
+nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
+nonterminal accessaggr;
 
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
 precedence right POW, IN, ASSIGN;
-precedence nonassoc NOT, LTHAN, LTHANEQ, EQUALS, NEQUALS;
+precedence nonassoc NOT, LTHAN, LTHANEQ, GTHANEQ, RANGBR, EQUALS, NEQUALS;
 
 // Main logic
 
 start with program;
 
-program ::= begin main begin;
+program ::= begin;
 
-main ::= ;
+//program ::= begin main begin;
 
-//begin ::= funcdeclaration begin  
-//     | typedeclaration begin //TODO 
-//     | vardeclaration begin 
-//     | 
-//     ; 
-
-begin ::= ;
-
-// Function declarations
-//-----------------------------
-funcdeclaration ::= FDEF type ID LPAREN paramlist RPAREN LBRACE block RBRACE SEMICOL;
+begin ::= vardeclaration SEMICOL  begin | ;
+// begin ::= funcdeclaration begin 
+//    | typedeclaration begin //TODO
+//    | vardeclaration begin
+//   |
+//    ;
 
 // Type declaration
 //-----------------------------
@@ -91,9 +88,9 @@ typedeclaration ::= ;
 
 // Variable declarations
 //-----------------------------
-vardeclaration ::= type ID value
+vardeclaration ::= type ID ASSIGN expr 
                  | type ID
-                 ;
+                 ; 
 
 type ::= primarytype 
        | aggregatetype
@@ -115,37 +112,73 @@ seq ::= SEQ LTHAN aggtype RANGBR;
 
 // Initialiazation of variables
 //-----------------------------
-// ID because you can have [ID]
-value ::= primaryvalue | aggregatevalue | ID;
-
-// Initialization and assignment
-primaryvalue ::= BOOL_LIT
-                | CHAR_LIT
-                | INT_LIT
-                | RAT_LIT
-                | FLOAT_LIT
+primaryvalue ::= BOOLLIT
+                | CHARLIT
+                | INTLIT
+                | RATLIT
+                | FLOATLIT
                 ;
 
 aggregatevalue ::= dictvalue
                 | seqvalue
+                | STRLIT
                 ;
 
-dictvalue ::= LTHAN dictlist RANGBR;
+dictvalue ::= LBRACE dictlist RBRACE;
 
-seqvalue ::=  LBRACK vallist RANGBR;
+seqvalue ::=  LBRACK exprlist RBRACK;
 
-vallisthelp ::= value
-          | vallist COMMA value 
-          ;
-vallist ::= vallisthelp
-          | 
-          ;
-
-dictlisthelp ::= value COL value
-           | dictlist COMMA value COL value
+dictlisthelp ::= expr COL expr
+           | dictlisthelp COMMA expr COL expr
            ;
 
 dictlist ::= dictlisthelp
            | 
            ;
+// Expressions
+funccall ::= ID LPAREN exprlist RPAREN;
+
+accessaggr ::= accessaggr LBRACK expr RBRACK
+             | aggregatevalue
+             | ID
+             ;
+
+// TODO: Should we include ID[:] to copy the entire seq?
+seqslice ::= accessaggr LBRACK expr COL expr RBRACK
+           | accessaggr LBRACK expr COL RBRACK
+           | accessaggr LBRACK COL expr RBRACK
+           | accessaggr
+           ;
+accessalias ::= expr DOT ID;
+
+
+exprlist ::= exprlisthelp | ;
+
+exprlisthelp ::= expr
+               | exprlisthelp COMMA expr;
+
+expr ::= NOT expr
+       | expr AND expr
+       | expr OR expr
+       | expr PLUS expr
+       | expr MINUS expr
+       | expr TIMES expr
+       | expr DIV expr
+       | expr POW expr
+       | expr LTHAN expr
+       | expr RANGBR expr
+       | expr LTHANEQ expr
+       | expr GTHANEQ expr
+       | expr EQUALS expr
+       | expr NEQUALS expr
+       | expr APPEND expr
+       | LEN LPAREN expr RPAREN
+       | expr IN expr
+       | MINUS expr
+       | LPAREN expr RPAREN
+       | funccall
+       | seqslice
+       | accessalias
+       | primaryvalue // Not aggr because it would be ambiguous with seqslice
+       ;
 
