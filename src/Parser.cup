@@ -14,7 +14,7 @@ parser code {:
 
 // Terminals
 // Primitives
-terminal BOOL, INT, RAT, FLOAT, CHAR;
+terminal BOOL, INT, RAT, FLOAT, CHAR, VOID;
 
 // Bool operators
 terminal NOT, AND, OR;
@@ -53,15 +53,15 @@ terminal ID;
 terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN, DOT;
 
 // Non Terminals
-nonterminal program, begin, main;
+nonterminal program, begin, main, assignment;
 nonterminal funcdeclaration, vardeclaration, typedeclaration;
-nonterminal type, paramlist, block, value;
+nonterminal type, paramlist, paramlisthelper, block, block2;
 nonterminal primarytype, aggregatetype, dict, seq;
 nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue; 
 nonterminal dictlisthelp, dictlist;
 nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
-nonterminal accessaggr;
-
+nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
+nonterminal returnstat, read, print, accessor, iostat, alias, functype;
 // Precedences
 precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
 precedence right POW, IN, ASSIGN;
@@ -71,26 +71,64 @@ precedence nonassoc NOT, LTHAN, LTHANEQ, GTHANEQ, RANGBR, EQUALS, NEQUALS;
 
 start with program;
 
-program ::= begin;
+program ::= begin main begin;
 
-//program ::= begin main begin;
+main ::= MAIN LBRACE block RBRACE SEMICOL;
 
-begin ::= vardeclaration SEMICOL  begin | ;
-// begin ::= funcdeclaration begin 
-//    | typedeclaration begin //TODO
-//    | vardeclaration begin
-//   |
-//    ;
+begin ::= vardeclaration SEMICOL begin
+        | funcdeclaration SEMICOL begin
+        | typedeclaration SEMICOL begin
+        | alias SEMICOL begin
+        |
+        ;
+
+block ::= assignment SEMICOL block2
+        | vardeclaration SEMICOL block2
+        | ifblock block2
+        | whileblock block2
+        | forblock block2
+        | returnstat SEMICOL block2
+        | iostat SEMICOL block2
+        | funccall SEMICOL block2
+        | alias SEMICOL block2
+        | typedeclaration SEMICOL block2
+        ;
+
+// The first block cannot be empty but the second
+// one can
+block2 ::= block | ;
+
+// Function definitions
+//-----------------------------
+funcdeclaration ::= FDEF functype ID LPAREN paramlist RPAREN LBRACE block RBRACE;
+
+functype ::= type | VOID;
+
+paramlist ::= paramlisthelper
+            | 
+            ;
+
+paramlisthelper ::= paramlisthelper COMMA type ID
+                  | type ID
+                  ;
+
 
 // Type declaration
 //-----------------------------
-typedeclaration ::= ;
+typedeclaration ::= TDEF ID LBRACE paramlist RBRACE;
+
+// Alias declatations
+alias ::= ALIAS ID ID
+        | ALIAS functype ID
+        | ALIAS functype functype;
 
 // Variable declarations
 //-----------------------------
 vardeclaration ::= type ID ASSIGN expr 
                  | type ID
                  ; 
+// TODO: Use this
+assignment ::= accessor ASSIGN expr;
 
 type ::= primarytype 
        | aggregatetype
@@ -151,7 +189,6 @@ seqslice ::= accessaggr LBRACK expr COL expr RBRACK
            ;
 accessalias ::= expr DOT ID;
 
-
 exprlist ::= exprlisthelp | ;
 
 exprlisthelp ::= expr
@@ -181,4 +218,38 @@ expr ::= NOT expr
        | accessalias
        | primaryvalue // Not aggr because it would be ambiguous with seqslice
        ;
+
+// If else statements
+ifblock ::= IF LPAREN expr RPAREN THEN block elifblock elseblock ENDIF;
+
+elifblock ::= ELIF LPAREN expr RPAREN THEN block elifblock
+            | 
+            ;
+
+elseblock ::= ELSE block
+            |
+            ;
+
+// While statements
+
+whileblock ::= WHILE LPAREN expr RPAREN DO block ENDDO;
+
+forblock ::= FORALL LPAREN ID IN ID RPAREN DO block ENDDO
+              | FORALL LPAREN ID IN aggregatevalue RPAREN block ENDDO
+              ;
+
+returnstat ::= RETURN expr
+             | RETURN
+             ;
+
+// IO Definitions
+accessor ::= accessalias
+           | accessaggr
+           ;
+
+print ::= PRINT expr;
+
+read ::= READ accessor;
+
+iostat ::= print | read;
 
