@@ -163,4 +163,4 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   \"                      { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
 }
 
-[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn + " "); }
+[^]     { System.out.println("Lexing error at line " + yyline+1 + ", column " + yycolumn + " "); }
