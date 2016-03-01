@@ -36,10 +36,11 @@ Comment = ({MultiLineComment}|{SingleLineComment})
 Letter = [a-zA-Z]
 Digit = [0-9]
 // Have we escaped everything?
-Punctuation = [\!#$%&\(\)\*\+,-\.\/:;<=>\?@\[\\\]\^_`\{¦\}\~ \" \']
+Punctuation = [\!#$%&\(\)\*\+,-\.\/:;<=>\?@\[\\\]\^_`\{\|\}\~ \" \']
+Escaped = \\b|\\n|\\t|\\f|\\r
 
 Identifier = {Letter}("_"|{Letter}|{Digit})*
-Character = "'"({Letter}|{Digit}|{Punctuation})"'"
+Character = \'({Letter}|{Digit}|{Punctuation}|{Escaped})\'
 Boolean = ("T"|"F")
 // We don't want negatives here, parser takes care of that
 Integer = (0|[1-9][0-9]*)
@@ -152,7 +153,7 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
 }
 
 <STRING> {
-  \\\"                  { string.append('\"'); }
+  \\\"                    { string.append('\"'); }
   [^"\"""\\\""]+          { string.append(yytext()); }
   \\t                     { string.append('\t'); }
   \\n                     { string.append('\n'); }
