@@ -46,7 +46,7 @@ Boolean = ("T"|"F")
 Integer = (0|[1-9][0-9]*)
 // Rational can be an integer + What is the underscore?
 Rational = ({Integer}"_")?{Integer}"/"{Integer}
-Float = (0|[1-9][0-9]*)"."[0-9]+
+Float = {Integer}"."[0-9]+
 
 %state STRING
 
@@ -88,7 +88,6 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   "dict"                { return symbol(sym.DICT); }
   "seq"                 { return symbol(sym.SEQ); }
   "top"                 { return symbol(sym.TOP); }
-  "string"              { return symbol(sym.STR); }
 
   // Operations on Aggregate
   "::"                  { return symbol(sym.APPEND); }
@@ -138,7 +137,7 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   // Start string
   // The reason we do this is because we want to escape
   // escaped quotations
-  "\""                    { string.setLength(0); yybegin(STRING); }
+  "\""                  { string.setLength(0); yybegin(STRING); }
 
   // Primitive data types
   {Boolean}             { return symbol(sym.BOOLLIT); }
@@ -161,7 +160,16 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   \\f                     { string.append('\f'); }
   \\b                     { string.append('\b'); }
   \\'                     { string.append('\''); }
+  \\\\                    { string.append("\\"); }
+  \\.                     { System.out.println("Error: Invalid escape sequence: \"" + yytext() + "\" at line: "
+                              + (yyline + 1) + " col: " + yycolumn + "\n");
+                          }
   \"                      { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
 }
 
-[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn + " "); }
+[^]     {
+  System.out.println("file:" + (yyline+1) +
+    ":" + yycolumn + ": Error: Invalid input '" + yytext()+"'");
+  return symbol(sym.BADCHAR);
+}
+
