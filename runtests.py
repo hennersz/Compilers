@@ -1,6 +1,7 @@
 import subprocess
 import time
 import os
+import sys
 
 
 def getFileNames():
@@ -17,9 +18,19 @@ def getFileNames():
 
 def runtests(files, positive):
     testfailed = 0
-    for file in files:
-        string = 'bin/:lib/java-cup-11b-runtime.jar'
+    if(positive):
+        print("Testing positive files")
+    else:
+        print("Testing negaive files")
 
+    string = 'bin/:lib/java-cup-11b-runtime.jar'
+    progress = 1.0
+    total = len(files)
+
+    for file in files:
+        percentage = int((progress/total)*100.0)
+        hashes = '#' * percentage
+        spaces = ' ' * (100 - percentage)
         p = subprocess.Popen(['java', '-cp', string, 'SC', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         err, out = p.communicate()
         if err == '':
@@ -33,11 +44,16 @@ def runtests(files, positive):
                     print "Failed test :("
                     print "Run the test again: java -cp " + string + " SC " + file
                     testfailed += 1
+        progress+=1
+        sys.stdout.write("\rPercent: [{0}] {1}%".format(hashes + spaces,percentage))
+        sys.stdout.flush()
+    print ' '
     return testfailed
 
 if __name__ == '__main__':
     print "This might take a while..."
-    subprocess.Popen(['make'])
+
+    subprocess.call(['make'])
     files = getFileNames()
 
     testfailed = runtests(files['negatives'], False)
