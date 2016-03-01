@@ -64,7 +64,8 @@ nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
 nonterminal returnstat, read, print, accessor, iostat, alias, functype;
 nonterminal vardeclarationh, multipledeclarations, varempptydeclaration;
 // Precedences
-precedence left PLUS, MINUS, TIMES, DIV, AND, OR, APPEND, COMMA;
+precedence left PLUS, MINUS, OR, APPEND, COMMA;
+precedence left TIMES, DIV, AND;
 precedence right POW, IN, ASSIGN;
 precedence nonassoc NOT, LTHAN, LTHANEQ, GTHANEQ, RANGBR, EQUALS, NEQUALS;
 
