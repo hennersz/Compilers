@@ -1,4 +1,4 @@
-char a = '##';
+char a = '#';
 
 main {
   return 0;
