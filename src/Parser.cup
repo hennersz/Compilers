@@ -208,10 +208,10 @@ accessaggr ::= accessaggr LBRACK expr RBRACK
              | ID
              ;
 
-// TODO: Should we include ID[:] to copy the entire seq?
 seqslice ::= accessaggr LBRACK expr COL expr RBRACK
            | accessaggr LBRACK expr COL RBRACK
            | accessaggr LBRACK COL expr RBRACK
+           | accessaggr LBRACK COL RBRACK
            | accessaggr
            ;
 accessalias ::= expr DOT ID;
