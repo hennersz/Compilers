@@ -1,3 +1,3 @@
 main {
-    top x = y[z];
+    var x = y[z];
 };
