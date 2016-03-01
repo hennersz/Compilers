@@ -44,7 +44,7 @@ Boolean = ("T"|"F")
 // We don't want negatives here, parser takes care of that
 Integer = (0|[1-9][0-9]*)
 // Rational can be an integer + What is the underscore?
-Rational = ({Integer}|(({Integer}"_")?{Integer}"/"{Integer}))
+Rational = ({Integer}"_")?{Integer}"/"{Integer}
 Float = (0|[1-9][0-9]*)"."[0-9]+
 
 %state STRING
@@ -62,7 +62,7 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
   "rat"                 { return symbol(sym.RAT); }
   "float"               { return symbol(sym.FLOAT); }
   "char"                { return symbol(sym.CHAR); }
-    "void"                { return symbol(sym.VOID); }
+  "void"                { return symbol(sym.VOID); }
 
   // Bool operators
   "!"                   { return symbol(sym.NOT); }
@@ -152,9 +152,15 @@ Float = (0|[1-9][0-9]*)"."[0-9]+
 }
 
 <STRING> {
-  "\\\""                  { string.append('\"'); }
+  \\\"                  { string.append('\"'); }
   [^"\"""\\\""]+          { string.append(yytext()); }
-  "\""                    { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
+  \\t                     { string.append('\t'); }
+  \\n                     { string.append('\n'); }
+  \\r                     { string.append('\r'); }
+  \\f                     { string.append('\f'); }
+  \\b                     { string.append('\b'); }
+  \\'                     { string.append('\''); }
+  \"                      { yybegin(YYINITIAL); return symbol(sym.STRLIT, string.toString()); }
 }
 
-[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn); }
+[^]     { throw new Error("Lexing error at line " + yyline+1 + ", column " + yycolumn + " "); }
