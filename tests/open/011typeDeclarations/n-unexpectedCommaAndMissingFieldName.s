@@ -1,0 +1,4 @@
+tdef x {int,};
+
+main {
+};

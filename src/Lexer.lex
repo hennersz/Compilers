@@ -172,4 +172,3 @@ Float = {Integer}"."[0-9]+
     ":" + yycolumn + ": Error: Invalid input '" + yytext()+"'");
   return symbol(sym.BADCHAR);
 }
-

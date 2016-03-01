@@ -1,0 +1,3 @@
+main {
+    char A = 'A';
+};

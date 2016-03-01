@@ -1,0 +1,3 @@
+main {
+    seq<int> s = [];
+};

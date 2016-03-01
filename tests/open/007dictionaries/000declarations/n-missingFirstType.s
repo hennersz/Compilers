@@ -1,0 +1,3 @@
+main {
+    dict<,int> d;
+};
