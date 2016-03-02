@@ -2,11 +2,11 @@ import subprocess
 import os
 import sys
 
-rootDirectoy = os.path.join(os.path.expanduser('~'),'Projects/Compilers')
+rootDirectoy = os.path.abspath(".")
+progressbar = True
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
 def getFileNames():
-    print(rootDirectoy + '/tests')
     files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(rootDirectoy + '/tests')] for val in sublist]
     negatives = []
     positives = []
@@ -18,8 +18,36 @@ def getFileNames():
     return {'negatives': negatives, 'positives': positives}
 
 
+def printProgressBar(percentage):
+    percentageh = int(percentage/2)
+    spaces = ' ' * (50 - percentageh)
+    if(percentageh < 17):
+        sys.stdout.write('\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}{1}'.format('#'*percentageh, spaces) + '\x1b[1;%dm' % (30+WHITE) +'] {0}%'.format(percentage))
+    elif(percentageh < 34):
+        string = '\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}'.format('#'*17)
+        string += '\x1b[1;%dm' % (30+YELLOW) + '{0}{1}'.format('#'*(percentageh - 17), spaces)
+        string += '\x1b[1;%dm' % (30+WHITE) + '] {0}%'.format(percentage)
+        sys.stdout.write('{0}'.format(string))
+    else:
+        string = '\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}'.format('#'*17)
+        string += '\x1b[1;%dm' % (30+YELLOW) + '{0}'.format('#'*17)
+        string += '\x1b[1;%dm' % (30+GREEN) + '{0}{1}'.format('#'*(percentageh - 34), spaces)
+        string += '\x1b[1;%dm' % (30+WHITE) + '] {0}%'.format(percentage)
+        sys.stdout.write('{0}'.format(string))
+    sys.stdout.flush()
+
+def otherProgressBar(errorstring, passed):
+    if passed:
+        errorstring += '\x1b[1;%dm' % (30+GREEN) + '#'
+    else:
+        errorstring += '\x1b[1;%dm' % (30+RED) + '#'
+
+    sys.stdout.write(errorstring)
+    sys.stdout.flush()
+
 def runtests(files, positive):
     testfailed = []
+    errorstring = ''
     if(positive):
         print("Testing positive files")
     else:
@@ -30,44 +58,36 @@ def runtests(files, positive):
     total = len(files)
 
     for file in files:
+        passed = True
         percentage = int((progress/total)*100.0)
-        spaces = ' ' * (100 - percentage)
         p = subprocess.run(['java', '-cp', string, 'SC', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        err, out = (p.stderr, p.stdout)
-        if err == '':
-            if positive:
-                if "error" in out:
-                    testfailed.append(file)
-            else:
-                if "error" not in out:
-                    testfailed.append(file)
-        progress+=1
-
-        if(percentage < 33):
-            sys.stdout.write('\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}{1}'.format('#'*percentage, spaces) + '\x1b[1;%dm' % (30+WHITE) +'] {0}%'.format(percentage))
-        elif(percentage < 66):
-            string = '\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}'.format('#'*33)
-            string += '\x1b[1;%dm' % (30+YELLOW) + '{0}{1}'.format('#'*(percentage - 33), spaces)
-            string += '\x1b[1;%dm' % (30+WHITE) + '] {0}%'.format(percentage)
-            sys.stdout.write('{0}'.format(string))
+        err, out = (str(p.stderr), str(p.stdout))
+        if positive:
+            if "error" in err and "parsing successful" not in out:
+                testfailed.append(file)
+                passed = False
         else:
-            string = '\rPercent: [' + '\x1b[1;%dm' % (30+RED) + '{0}'.format('#'*33)
-            string += '\x1b[1;%dm' % (30+YELLOW) + '{0}'.format('#'*33)
-            string += '\x1b[1;%dm' % (30+GREEN) + '{0}{1}'.format('#'*(percentage - 66), spaces)
-            string += '\x1b[1;%dm' % (30+WHITE) + '] {0}%'.format(percentage)
-            sys.stdout.write('{0}'.format(string))
-        sys.stdout.flush()
-    print(' ')
+            if "error" not in err:
+                testfailed.append(file)
+                passed = False
+        progress+=1
+        if progressbar:
+            printProgressBar(percentage)
+        else:
+            otherProgressBar(errorstring, passed)
+    sys.stdout.write('\x1b[1;%dm' % (30+WHITE) + '\n' )
     return testfailed
 
-def printFailedTests(testfailed):
+def printFailedTests(testfailed, amountOfTests):
     string = rootDirectoy + '/bin/:lib/java-cup-11b-runtime.jar'
     for file in testfailed:
-        sys.out.write('\x1b[1;%dm' % (30+RED) + "Test failed :(\n" + '\x1b[1;%dm' % (30+WHITE))
+        sys.stdout.write('\x1b[1;%dm' % (30+RED) + "Test failed :(\n" + '\x1b[1;%dm' % (30+WHITE))
         print("Run the test again: java -cp " + string + " SC " + file)
 
     if len(testfailed) == 0:
         sys.stdout.write('\x1b[1;%dm' % (30+GREEN) + "Passed all of the tests, congrats :)\n")
+    else:
+        sys.stdout.write('\x1b[1;%dm' % (30+RED) + "Failed {0}/{1} tests\n".format(len(testfailed), amountOfTests))
 
 if __name__ == '__main__':
     sys.stdout.write('\x1b[1;%dm' % (30+WHITE))
@@ -78,6 +98,6 @@ if __name__ == '__main__':
     files = getFileNames()
 
     testfailed = runtests(files['negatives'], False)
-    testfailed += runtests(files['positives'], True)
+    testfailed.extend(runtests(files['positives'], True))
 
-    printFailedTests(testfailed)
+    printFailedTests(testfailed, len(files['negatives']) + len(files['positives']))
