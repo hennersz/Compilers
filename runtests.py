@@ -2,12 +2,12 @@ import subprocess
 import os
 import sys
 
-rootDirectoy = os.path.abspath(".")
+rootDirectory, filename = os.path.split(os.path.abspath(__file__))
 progressbar = True
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
 def getFileNames():
-    files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(rootDirectoy + '/tests')] for val in sublist]
+    files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(rootDirectory + '/tests')] for val in sublist]
     negatives = []
     positives = []
     for file in files:
@@ -53,7 +53,7 @@ def runtests(files, positive):
     else:
         print("Testing negative files")
 
-    string = rootDirectoy + '/bin/:lib/java-cup-11b-runtime.jar'
+    string = rootDirectory + '/bin/:lib/java-cup-11b-runtime.jar'
     progress = 1.0
     total = len(files)
 
@@ -79,7 +79,7 @@ def runtests(files, positive):
     return testfailed
 
 def printFailedTests(testfailed, amountOfTests):
-    string = rootDirectoy + '/bin/:lib/java-cup-11b-runtime.jar'
+    string = rootDirectory + '/bin/:lib/java-cup-11b-runtime.jar'
     for file in testfailed:
         sys.stdout.write('\x1b[1;%dm' % (30+RED) + "Test failed :(\n" + '\x1b[1;%dm' % (30+WHITE))
         print("Run the test again: java -cp " + string + " SC " + file)
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     print("This might take a while...")
 
     #subrocess.call() is blocking, need to wait until make finishes executing
-    subprocess.call(['make', '-C', rootDirectoy])
+    subprocess.call(['make', '-C', rootDirectory])
     files = getFileNames()
 
     testfailed = runtests(files['negatives'], False)
