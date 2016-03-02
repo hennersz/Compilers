@@ -3,9 +3,11 @@ import time
 import os
 import sys
 
+rootDirectoy = os.path.join(os.path.expanduser('~'),'GitHub/Compilers')
 
 def getFileNames():
-    files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk('./tests')] for val in sublist]
+    print rootDirectoy + '/tests'
+    files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(rootDirectoy + '/tests')] for val in sublist]
     negatives = []
     positives = []
     for file in files:
@@ -23,7 +25,7 @@ def runtests(files, positive):
     else:
         print("Testing negaive files")
 
-    string = 'bin/:lib/java-cup-11b-runtime.jar'
+    string = rootDirectoy + '/bin/:lib/java-cup-11b-runtime.jar'
     progress = 1.0
     total = len(files)
 
@@ -53,7 +55,8 @@ def runtests(files, positive):
 if __name__ == '__main__':
     print "This might take a while..."
 
-    subprocess.call(['make'])
+    #subrocess.call() is blocking, need to wait until make finishes executing
+    subprocess.call(['make', '-C', rootDirectoy])
     files = getFileNames()
 
     testfailed = runtests(files['negatives'], False)
