@@ -3,7 +3,7 @@ import os
 import sys
 
 rootDirectory, filename = os.path.split(os.path.abspath(__file__))
-progressbar = False 
+progressbar = False
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
 def getFileNames():
