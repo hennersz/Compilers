@@ -97,7 +97,6 @@ begin ::= vardeclaration SEMICOL begin
 block ::= expr SEMICOL block2
         | assignment SEMICOL block2
         | vardeclaration SEMICOL block2
-        | vardeclaration SEMICOL block2
         | ifblock block2
         | whileblock block2
         | forblock block2

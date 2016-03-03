@@ -1,0 +1,43 @@
+You cannot declare a variable with type void or top.
+Hence, 'top x = 4;' will not be allowed
+We only allow top within a dictionary or a sequence as in:
+seq<top> a = ['a', 1]
+
+!! You cannot create an alias for top or void
+You can overwrite datatypes using an alias
+For example: 'alias int char;' is allowed
+
+Our compiler allows multiple declarations like:
+int a = 3, b = 4;
+
+Since our language has aliasing, we allow statements like
+hello a = 5; # even though hello has not been aliased
+
+The compiler will allow statements like:
+seq<int> test = 4;
+because we do not check any of the semantics
+
+You can only access an index or key of an identifier or a literal. For instance:
+testing[1] and [1, 2, 3, 4][0] 
+While 1[0] is not allowed
+
+You can copy an entire array by using this sequence slicing syntax:
+seq<int> a = [1, 2, 3]
+seq<int> b = a[:]
+
+Our compiler do allow blocks of code like:
+main {
+    5 + 2;
+}
+
+Even though the value is not used, we allow it because ... ?
+
+The syntax of print and read can be with and without brackets. For instance:
+read x;
+read(x);
+
+Are both allowed
+
+We assume that main does not require a return statement
+
+Global declarations can happen everywhere (global, function, global, main global is allowed)
