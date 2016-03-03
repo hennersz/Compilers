@@ -1,0 +1,31 @@
+Our compiler does not allow the declaration of a variable with type void or top.
+For instance the following code will not compile: 'top x = 4;' 
+We only allow top within a dictionary or a sequence as in:
+seq<top> a = ['a', 1]
+
+You cannot create an alias for top or void
+
+Multiple declaration are allowed on 1 line. For example:
+int a = 3, b = 4;
+
+The compiler will allow statements like:
+seq<int> test = 4;
+Because we do not check any of the semantics
+
+You can only access an index or key of an idenfifier. For instance:
+testing[1].
+While [1, 2, 3][0], ([0] :: [1])[0] and functionCall()[0] are not allowed.
+
+You can copy an entire array by using this sequence slicing syntax:
+seq<int> a = [1, 2, 3]
+seq<int> b = a[:]
+
+Blocks of code like a main function, loops and if statements cannot be empty.
+
+The syntax of print and read can be with and without brackets. For instance:
+read x;
+read(x);
+
+We assume that main does not require a return statement.
+
+Aliasing and declaring a new type is allowed anywhere, even inside of a function.
