@@ -1,3 +1,4 @@
+// Lexer file by Axel Goetz and Henry Mortimer
 import java_cup.runtime.*;
 
 %%

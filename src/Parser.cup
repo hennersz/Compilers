@@ -1,3 +1,5 @@
+// Parser file by Axel Goetz and Henry Mortimer
+
 import java_cup.runtime.*;
 import java.util.ArrayList;
 
