@@ -1,4 +1,4 @@
-alias void hello;
+alias int hello;
 
 main {
 print "Hello";

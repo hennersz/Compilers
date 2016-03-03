@@ -1,3 +1,3 @@
 main {
-  myfunc(3,2)[2];
+  int test = hello["Test"][0][2][2];
 };
