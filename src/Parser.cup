@@ -72,6 +72,7 @@ nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
 nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
 nonterminal returnstat, read, print, accessor, iostat, alias, functype;
 nonterminal vardeclarationh, multipledeclarations, varempptydeclaration;
+nonterminal multipleexpr;
 // Precedences
 precedence left PLUS, MINUS, OR, APPEND, COMMA;
 precedence left TIMES, DIV, AND;
@@ -93,8 +94,9 @@ begin ::= vardeclaration SEMICOL begin
         |
         ;
 
-block ::= exprh SEMICOL block2
+block ::= expr SEMICOL block2
         | assignment SEMICOL block2
+        | vardeclaration SEMICOL block2
         | vardeclaration SEMICOL block2
         | ifblock block2
         | whileblock block2
@@ -132,9 +134,8 @@ typedeclaration ::= TDEF ID LBRACE paramlist RBRACE;
 
 // Alias declatations
 alias ::= ALIAS ID ID
-        | ALIAS functype ID
-        | ALIAS functype functype;
-
+        | ALIAS type ID
+        ;
 // Variable declarations
 //-----------------------------
 // Not using type because of aliases
@@ -153,7 +154,11 @@ multipledeclarations ::= COMMA expr multipledeclarations
                        |
                        ;
 
-assignment ::= accessor ASSIGN expr;
+assignment ::= accessor ASSIGN multipleexpr;
+
+multipleexpr ::= multipleexpr COMMA expr
+               | expr
+               ;
 
 type ::= primarytype
        | aggregatetype
@@ -184,7 +189,6 @@ primaryvalue ::= BOOLLIT
                | FLOATLIT
                ;
 
-//cant index string literals ie "test"[2] should not be accepted by the parser
 aggregatevalue ::= dictvalue
                  | seqvalue
                  ;
@@ -204,7 +208,6 @@ dictlist ::= dictlisthelp
 funccall ::= ID LPAREN exprlist RPAREN;
 
 accessaggr ::= accessaggr LBRACK expr RBRACK
-             | aggregatevalue
              | ID
              ;
 
@@ -212,7 +215,6 @@ seqslice ::= accessaggr LBRACK expr COL expr RBRACK
            | accessaggr LBRACK expr COL RBRACK
            | accessaggr LBRACK COL expr RBRACK
            | accessaggr LBRACK COL RBRACK
-           | accessaggr
            ;
 accessalias ::= expr DOT ID;
 
@@ -221,7 +223,7 @@ exprlist ::= exprlisthelp | ;
 exprlisthelp ::= expr
                | exprlisthelp COMMA expr;
 
-exprh ::=  NOT expr
+exprh ::= NOT expr
        | expr AND expr
        | expr OR expr
        | expr PLUS expr
@@ -229,6 +231,7 @@ exprh ::=  NOT expr
        | expr TIMES expr
        | expr DIV expr
        | expr POW expr
+       | expr IN expr
        | expr LTHAN expr
        | expr RANGBR expr
        | expr LTHANEQ expr
@@ -237,17 +240,17 @@ exprh ::=  NOT expr
        | expr NEQUALS expr
        | expr APPEND expr
        | LEN LPAREN expr RPAREN
-       | expr IN expr
        | MINUS expr
        | LPAREN expr RPAREN
        | funccall
-       | primaryvalue // Not aggr because it would be ambiguous with seqslice
+       | STRLIT
+       | primaryvalue 
+       | aggregatevalue
        ;
 
 expr ::= exprh
        | seqslice
-       | accessalias
-       | STRLIT
+       | accessor
        ;
 
 // If else statements
