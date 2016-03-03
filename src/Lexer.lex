@@ -153,7 +153,6 @@ Float = {Integer}"."[0-9]+
 
 <STRING> {
   \\\"                    { string.append('\"'); }
-  [^"\"""\\\""]+          { string.append(yytext()); }
   \\t                     { string.append('\t'); }
   \\n                     { string.append('\n'); }
   \\r                     { string.append('\r'); }
@@ -161,6 +160,7 @@ Float = {Integer}"."[0-9]+
   \\b                     { string.append('\b'); }
   \\'                     { string.append('\''); }
   \\\\                    { string.append("\\"); }
+  [^"\"""\\\""]+          { string.append(yytext()); }
   \\.                     { System.out.println("Error: Invalid escape sequence: \"" + yytext() + "\" at line: "
                               + (yyline + 1) + " col: " + yycolumn + "\n");
                           }

@@ -184,9 +184,9 @@ primaryvalue ::= BOOLLIT
                | FLOATLIT
                ;
 
+//cant index string literals ie "test"[2] should not be accepted by the parser
 aggregatevalue ::= dictvalue
                  | seqvalue
-                 | STRLIT
                  ;
 
 dictvalue ::= LBRACE dictlist RBRACE;
@@ -247,6 +247,7 @@ exprh ::=  NOT expr
 expr ::= exprh
        | seqslice
        | accessalias
+       | STRLIT
        ;
 
 // If else statements
