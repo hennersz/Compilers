@@ -1,3 +1,4 @@
 main {
     char at = '@';
+    return;
 };
