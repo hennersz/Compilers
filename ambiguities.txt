@@ -20,7 +20,8 @@ You can copy an entire array by using this sequence slicing syntax:
 seq<int> a = [1, 2, 3]
 seq<int> b = a[:]
 
-Blocks of code like a main function, loops and if statements cannot be empty.
+Blocks of code like a main function, loops and if statements must have at
+least 1 statement.
 
 The syntax of print and read can be with and without brackets. For instance:
 read x;
