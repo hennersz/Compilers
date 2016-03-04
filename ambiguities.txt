@@ -1,9 +1,7 @@
-Our compiler does not allow the declaration of a variable with type void or top.
-For instance the following code will not compile: 'top x = 4;' 
-We only allow top within a dictionary or a sequence as in:
-seq<top> a = ['a', 1]
+Our compiler does not allow the declaration of a variable with type void but it does allow the declaration of variables with type top.
+For instance the following code will not compile: 'void x = 4;' 
 
-You cannot create an alias for top or void
+You cannot create an alias for void or any other key words eg if
 
 Multiple declaration are allowed on 1 line. For example:
 int a = 3, b = 4;
@@ -21,7 +19,7 @@ seq<int> a = [1, 2, 3]
 seq<int> b = a[:]
 
 Blocks of code like a main function, loops and if statements must have at
-least 1 statement.
+least 1 statement and can have 0 or more declarations.
 
 The syntax of print and read can be with and without brackets. For instance:
 read x;
@@ -30,3 +28,10 @@ read(x);
 We assume that main does not require a return statement.
 
 Aliasing and declaring a new type is allowed anywhere, even inside of a function.
+
+Declarations always come before staements in function bodies.
+
+We assumed the '_' was an important part of  the numerator of rational numbers.
+We assumed stings could have escaped special characters inside of them.
+
+string is not a keyword.
