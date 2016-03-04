@@ -74,7 +74,7 @@ nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
 nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
 nonterminal returnstat, read, print, accessor, iostat, alias, functype;
 nonterminal vardeclarationh, multipledeclarations, varempptydeclaration;
-nonterminal multipleexpr;
+nonterminal multipleexpr, block1, declarations;
 // Precedences
 precedence left PLUS, MINUS, OR, APPEND, COMMA;
 precedence left TIMES, DIV, AND;
@@ -96,9 +96,12 @@ begin ::= vardeclaration SEMICOL begin
         |
         ;
 
-block ::= expr SEMICOL block2
+declarations ::= vardeclaration SEMICOL declarations
+               |
+               ;
+
+block1 ::= expr SEMICOL block2
         | assignment SEMICOL block2
-        | vardeclaration SEMICOL block2
         | ifblock block2
         | whileblock block2
         | forblock block2
@@ -110,7 +113,9 @@ block ::= expr SEMICOL block2
 
 // The first block cannot be empty but the second
 // one can
-block2 ::= block | ;
+block2 ::= block1 | ;
+
+block ::= declarations block1;
 
 // Function definitions
 //-----------------------------
@@ -134,22 +139,16 @@ paramlisthelper ::= paramlisthelper COMMA type ID
 typedeclaration ::= TDEF ID LBRACE paramlist RBRACE;
 
 // Alias declatations
-alias ::= ALIAS ID ID
-        | ALIAS type ID
-        ;
+alias ::= ALIAS aggtype ID;
 // Variable declarations
 //-----------------------------
 // Not using type because of aliases
 vardeclaration ::= varempptydeclaration
                  | vardeclarationh multipledeclarations;
 
-varempptydeclaration ::= type ID
-                       | ID ID
-                       ;
+varempptydeclaration ::= aggtype ID;
 
-vardeclarationh ::= ID ID ASSIGN expr
-                 | type ID ASSIGN expr
-                 ;
+vardeclarationh ::= aggtype ID ASSIGN expr;
 
 multipledeclarations ::= COMMA expr multipledeclarations
                        |
@@ -165,8 +164,6 @@ type ::= primarytype
        | aggregatetype
        ;
 
-// This is used because we don't want declarations like
-// top x = 5, since we use top only in dict/seq
 aggtype ::= type
           | TOP
           | ID
