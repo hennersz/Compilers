@@ -1,3 +1,3 @@
 main {
-    while (x + x) do int x = 0; od
+    while (x + x) do x = 0; od
 };

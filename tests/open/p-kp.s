@@ -6,16 +6,16 @@ fdef bool isHappy(string question) {
 };
 main {
     kp instance;
+    bool wrong;
     print("Is KP currently happy?\n");
     read kp.happy;
     print "What is the name of the next hackathon kp is organizing?\n";
     read kp.hackathon ;
-    bool wrong;
     print "Is there anything that is currently going wrong?";
     read wrong;
     if(wrong) then
-        print "What went wrong?";
         string thingthatwentwrong;
+        print "What went wrong?";
         read thingthatwentwrong;
         isHappy(thingthatwentwrong);
     else 

@@ -38,11 +38,11 @@ even or odd
 #/
 
 main {
-    print("Enter a number: /n");
     test number;
-    read number;
     bool isEven = isEven(number);
     bool isOdd = isOdd(number);
+    print("Enter a number: /n");
+    read number;
 
     if(isEven) then
         print "The number is even";
