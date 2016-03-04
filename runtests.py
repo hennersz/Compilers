@@ -11,10 +11,12 @@ def getFileNames():
     negatives = []
     positives = []
     for file in files:
-        if "n-" in file:
-            negatives.append(file)
-        elif "p-" in file:
-            positives.append(file)
+        #dont run backup files created by vim
+        if file[-1] != '~':
+            if "n-" in file:
+                negatives.append(file)
+            elif "p-" in file:
+                positives.append(file)
     return {'negatives': negatives, 'positives': positives}
 
 
