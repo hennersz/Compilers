@@ -1,11 +1,5 @@
-# Compilers
+# Compilers Coursework
 
-Build the source:
-```
-make
-```
+Part 1 is a lexer and a parser for Z, created using JFlex and CUP.
 
-To test:
-```
-make test
-```
+While Part 2 uses BCEL to do bytecode optimization.
