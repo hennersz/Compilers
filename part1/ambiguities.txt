@@ -1,0 +1,37 @@
+Our compiler does not allow the declaration of a variable with type void but it does allow the declaration of variables with type top.
+For instance the following code will not compile: 'void x = 4;' 
+
+You cannot create an alias for void or any other key words eg if
+
+Multiple declaration are allowed on 1 line. For example:
+int a = 3, b = 4;
+
+The compiler will allow statements like:
+seq<int> test = 4;
+Because we do not check any of the semantics
+
+You can only access an index or key of an idenfifier. For instance:
+testing[1].
+While [1, 2, 3][0], ([0] :: [1])[0] and functionCall()[0] are not allowed.
+
+You can copy an entire array by using this sequence slicing syntax:
+seq<int> a = [1, 2, 3]
+seq<int> b = a[:]
+
+Blocks of code like a main function, loops and if statements must have at
+least 1 statement and can have 0 or more declarations.
+
+The syntax of print and read can be with and without brackets. For instance:
+read x;
+read(x);
+
+We assume that main does not require a return statement.
+
+Aliasing and declaring a new type is allowed anywhere, even inside of a function.
+
+Declarations always come before staements in function bodies.
+
+We assumed the '_' was an important part of  the numerator of rational numbers.
+We assumed stings could have escaped special characters inside of them.
+
+string is not a keyword.

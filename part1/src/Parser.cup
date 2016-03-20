@@ -1,0 +1,284 @@
+// Parser file by Axel Goetz and Henry Mortimer
+
+import java_cup.runtime.*;
+import java.util.ArrayList;
+
+parser code {:
+  public Boolean syntaxErrors = false;
+
+  public void syntax_error(Symbol current_token) {
+    report_error("Syntax error at line " + (current_token.left+1) + ", column "
+        + current_token.right + "\n", null
+    );
+    syntaxErrors = true;
+  }
+
+  public void unrecovered_syntax_error(Symbol current_token) {
+    if(!syntaxErrors) {
+      report_error("Syntax error at line " + (current_token.left+1) + ", column "
+          + current_token.right, null
+      );
+      syntaxErrors = true;
+    }
+  }
+:}
+
+// Terminals
+// Primitives
+terminal BOOL, INT, RAT, FLOAT, CHAR, VOID;
+
+// Bool operators
+terminal NOT, AND, OR;
+
+// Arithmetic operators
+terminal PLUS, MINUS, TIMES, DIV, POW;
+
+// Comparisons
+terminal LTHAN, LTHANEQ, GTHANEQ, EQUALS, NEQUALS;
+
+// Aggregate keywords
+terminal DICT, SEQ, TOP;
+
+// Operations on Aggregate
+terminal APPEND, LEN, IN;
+
+// Declarations
+terminal TDEF, FDEF, ALIAS;
+
+// IO Functions
+terminal READ, PRINT;
+
+// Control flow
+terminal IF, ELIF, ELSE, THEN, ENDIF, WHILE, DO, ENDDO, FORALL;
+
+// Return statement
+terminal RETURN;
+
+// Literals
+terminal BOOLLIT, CHARLIT, INTLIT, RATLIT, FLOATLIT, STRLIT;
+
+// Identifier
+terminal ID;
+
+// Other
+terminal RANGBR, LPAREN, RPAREN, ASSIGN, LBRACK, RBRACK, LBRACE, RBRACE, COMMA, SEMICOL, COL, MAIN, DOT, BADCHAR;
+
+// Non Terminals
+nonterminal program, begin, main, assignment;
+nonterminal funcdeclaration, vardeclaration, typedeclaration;
+nonterminal type, paramlist, paramlisthelper, block, block2;
+nonterminal primarytype, aggregatetype, dict, seq;
+nonterminal aggtype, primaryvalue, aggregatevalue, dictvalue, seqvalue;
+nonterminal dictlisthelp, dictlist, exprh;
+nonterminal expr, exprlist, exprlisthelp, funccall, seqslice, accessalias;
+nonterminal accessaggr, ifblock, elifblock, elseblock, whileblock, forblock;
+nonterminal returnstat, read, print, accessor, iostat, alias, functype;
+nonterminal vardeclarationh, multipledeclarations, varempptydeclaration;
+nonterminal multipleexpr, block1, declarations;
+// Precedences
+precedence left PLUS, MINUS, OR, APPEND, COMMA;
+precedence left TIMES, DIV, AND;
+precedence right POW, IN, ASSIGN;
+precedence nonassoc NOT, LTHAN, LTHANEQ, GTHANEQ, RANGBR, EQUALS, NEQUALS;
+
+// Main logic
+
+start with program;
+
+program ::= begin main begin;
+
+main ::= MAIN LBRACE block RBRACE SEMICOL;
+
+begin ::= vardeclaration SEMICOL begin
+        | funcdeclaration SEMICOL begin
+        | typedeclaration SEMICOL begin
+        | alias SEMICOL begin
+        |
+        ;
+
+declarations ::= vardeclaration SEMICOL block 
+               ;
+
+block1 ::= expr SEMICOL block2
+        | assignment SEMICOL block2
+        | ifblock block2
+        | whileblock block2
+        | forblock block2
+        | returnstat SEMICOL block2
+        | iostat SEMICOL block2
+        | alias SEMICOL block2
+        | typedeclaration SEMICOL block2
+        ;
+
+// The first block cannot be empty but the second
+// one can
+block2 ::= block1 | ;
+
+block ::= declarations |  block1;
+
+// Function definitions
+//-----------------------------
+funcdeclaration ::= FDEF functype ID LPAREN paramlist RPAREN LBRACE block RBRACE;
+
+functype ::= type | VOID;
+
+paramlist ::= paramlisthelper
+            |
+            ;
+
+paramlisthelper ::= paramlisthelper COMMA type ID
+                  | paramlisthelper COMMA ID ID
+                  | type ID
+                  | ID ID
+                  ;
+
+
+// Type declaration
+//-----------------------------
+typedeclaration ::= TDEF ID LBRACE paramlist RBRACE;
+
+// Alias declatations
+alias ::= ALIAS aggtype ID;
+// Variable declarations
+//-----------------------------
+// Not using type because of aliases
+vardeclaration ::= varempptydeclaration
+                 | vardeclarationh multipledeclarations;
+
+varempptydeclaration ::= aggtype ID;
+
+vardeclarationh ::= aggtype ID ASSIGN expr;
+
+multipledeclarations ::= COMMA expr multipledeclarations
+                       |
+                       ;
+
+assignment ::= accessor ASSIGN multipleexpr;
+
+multipleexpr ::= multipleexpr COMMA expr
+               | expr
+               ;
+
+type ::= primarytype
+       | aggregatetype
+       ;
+
+aggtype ::= type
+          | TOP
+          | ID
+          ;
+
+primarytype ::=  BOOL | INT | RAT | FLOAT | CHAR;
+
+aggregatetype ::= dict | seq ;
+
+dict ::= DICT LTHAN aggtype COMMA aggtype RANGBR;
+
+seq ::= SEQ LTHAN aggtype RANGBR;
+
+// Initialiazation of variables
+//-----------------------------
+primaryvalue ::= BOOLLIT
+               | CHARLIT
+               | INTLIT
+               | RATLIT
+               | FLOATLIT
+               ;
+
+aggregatevalue ::= dictvalue
+                 | seqvalue
+                 ;
+
+dictvalue ::= LBRACE dictlist RBRACE;
+
+seqvalue ::=  LBRACK exprlist RBRACK;
+
+dictlisthelp ::= expr COL expr
+               | dictlisthelp COMMA expr COL expr
+               ;
+
+dictlist ::= dictlisthelp
+           |
+           ;
+// Expressions
+funccall ::= ID LPAREN exprlist RPAREN;
+
+accessaggr ::= accessaggr LBRACK expr RBRACK
+             | ID
+             ;
+
+seqslice ::= accessaggr LBRACK expr COL expr RBRACK
+           | accessaggr LBRACK expr COL RBRACK
+           | accessaggr LBRACK COL expr RBRACK
+           | accessaggr LBRACK COL RBRACK
+           ;
+accessalias ::= expr DOT ID;
+
+exprlist ::= exprlisthelp | ;
+
+exprlisthelp ::= expr
+               | exprlisthelp COMMA expr;
+
+exprh ::= NOT expr
+       | expr AND expr
+       | expr OR expr
+       | expr PLUS expr
+       | expr MINUS expr
+       | expr TIMES expr
+       | expr DIV expr
+       | expr POW expr
+       | expr IN expr
+       | expr LTHAN expr
+       | expr RANGBR expr
+       | expr LTHANEQ expr
+       | expr GTHANEQ expr
+       | expr EQUALS expr
+       | expr NEQUALS expr
+       | expr APPEND expr
+       | LEN LPAREN expr RPAREN
+       | MINUS expr
+       | LPAREN expr RPAREN
+       | funccall
+       | STRLIT
+       | primaryvalue 
+       | aggregatevalue
+       ;
+
+expr ::= exprh
+       | seqslice
+       | accessor
+       ;
+
+// If else statements
+ifblock ::= IF LPAREN expr RPAREN THEN block elifblock elseblock ENDIF;
+
+elifblock ::= ELIF LPAREN expr RPAREN THEN block elifblock
+            |
+            ;
+
+elseblock ::= ELSE block
+            |
+            ;
+
+// Loops statements
+
+whileblock ::= WHILE LPAREN expr RPAREN DO block ENDDO;
+
+forblock ::= FORALL LPAREN ID IN ID RPAREN DO block ENDDO
+              | FORALL LPAREN ID IN aggregatevalue RPAREN block ENDDO
+              ;
+
+returnstat ::= RETURN expr
+             | RETURN
+             ;
+
+// IO Definitions
+accessor ::= accessalias
+           | accessaggr
+           ;
+
+print ::= PRINT expr;
+
+read ::= READ accessor;
+
+iostat ::= print | read;
