@@ -1,3 +1,0 @@
-main {
-    char x = 's;
-};

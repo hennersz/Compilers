@@ -1,3 +1,0 @@
-main {
-    bool z = T &&;
-};

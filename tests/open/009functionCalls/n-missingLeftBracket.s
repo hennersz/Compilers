@@ -1,3 +1,0 @@
-main {
-    funccall 3);
-};

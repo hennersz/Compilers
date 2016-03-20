@@ -1,3 +1,0 @@
-main {
-    int hello-world;
-};

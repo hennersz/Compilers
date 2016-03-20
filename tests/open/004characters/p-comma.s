@@ -1,4 +1,0 @@
-main {
-    char comma = ',';
-    return;
-};

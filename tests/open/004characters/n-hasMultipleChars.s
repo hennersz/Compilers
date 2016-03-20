@@ -1,3 +1,0 @@
-main {
-    char z = 'da';
-};

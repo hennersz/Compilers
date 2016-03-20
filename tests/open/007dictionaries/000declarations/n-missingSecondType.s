@@ -1,3 +1,0 @@
-main {
-    dict<int,> d;
-};
