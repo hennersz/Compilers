@@ -1,16 +1,26 @@
+# Part 1
+
 # Compiled files
-bin/
+part1/bin/
 
 # Lexer java file
-src/Lexer.java
+part1/src/Lexer.java
 
 # Parser java file
-src/Parser.java
-src/sym.java
+part1/src/Parser.java
+part1/src/sym.java
 
 # Test Result file
-result.csv
+part1/result.csv
+
+# Part 2
+part2/test-reports
+
+# bytecode files
+*.class
 
 # Vim files
 *~
 *.swp
+
+
