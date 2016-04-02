@@ -115,7 +115,7 @@ public class ConstantFolder
     {
       optimizeMethod(cgen, cpgen, m);
     }
-		this.optimized = gen.getJavaClass();
+		this.optimized = cgen.getJavaClass();
 	}
 
 	

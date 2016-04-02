@@ -11,7 +11,7 @@ import java.io.PrintStream;
 /**
  * test simple folding
  */
-public class SimpleFoldingTest {
+public class ASimpleFoldingTest {
 
     SimpleFolding sf = new SimpleFolding();
     
