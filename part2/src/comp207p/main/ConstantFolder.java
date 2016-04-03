@@ -46,19 +46,21 @@ public class ConstantFolder
     // Get the Code of the method, which is a collection of bytecode instructions
 		Code methodCode = method.getCode();
 
-		// Now get the actualy bytecode data in byte array, 
+		// Now get the actualy bytecode data in byte array,
 		// and use it to initialise an InstructionList
 		InstructionList instList = new InstructionList(methodCode.getCode());
 
-		// Initialise a method generator with the original method as the baseline	
-		MethodGen methodGen = new MethodGen(method.getAccessFlags(), method.getReturnType(), method.getArgumentTypes(), null, method.getName(), cgen.getClassName(), instList, cpgen); 
+		// Initialise a method generator with the original method as the baseline
+		MethodGen methodGen = new MethodGen(method.getAccessFlags(), method.getReturnType(), method.getArgumentTypes(), null, method.getName(), cgen.getClassName(), instList, cpgen);
 		InstructionHandle h1 = null, h2 = null;
 		//InstructionHandle is a wrapper for actual Instructions
+		System.out.println("New method started: " + method.getName());
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
+			System.out.println(handle.toString());
       if(handle.getInstruction() instanceof LDC){
         System.out.println(((LDC)handle.getInstruction()).getValue(cpgen));
-      } 
+      }
       if(h1 != null && h2 != null)
       {
         if(handle.getInstruction() instanceof  IADD &&
@@ -66,7 +68,7 @@ public class ConstantFolder
             h2.getInstruction() instanceof LDC )
         {
           int value = ((Integer)(((LDC)h1.getInstruction()).getValue(cpgen))+ (Integer)(((LDC)h2.getInstruction()).getValue(cpgen)));
-          
+
           instList.insert(handle, new LDC(cpgen.addInteger(value)));
           System.out.println("here");
           try
@@ -74,7 +76,7 @@ public class ConstantFolder
             // delete the old one
             instList.delete(handle);
             instList.delete(h1);
-            instList.delete(h2);  
+            instList.delete(h2);
             System.out.println("here too");
           }
           catch (TargetLostException e)
@@ -87,9 +89,15 @@ public class ConstantFolder
       h2 = h1;
       h1 = handle;
     }
-		// setPositions(true) checks whether jump handles 
+		// setPositions(true) checks whether jump handles
 		// are all within the current method
 		instList.setPositions(true);
+
+		System.out.println("Optimised method instructions: " + method.getName());
+		for(InstructionHandle handle : instList.getInstructionHandles())
+    {
+			System.out.println(handle.toString());
+		}
 
 		// set max stack/local
 		methodGen.setMaxStack();
@@ -99,16 +107,17 @@ public class ConstantFolder
 		Method newMethod = methodGen.getMethod();
 		// replace the method in the original class
 		cgen.replaceMethod(method, newMethod);
-    System.out.println("here finally");
+    //System.out.println("here finally");
   }
-	
+
 	public void optimize()
 	{
 		ClassGen cgen = new ClassGen(original);
+		cgen.setMajor(50);
 		ConstantPoolGen cpgen = cgen.getConstantPool();
 
 		// Implement your optimization here
-        
+
     Method[] methods = cgen.getMethods();
 
     for(Method m : methods)
@@ -118,7 +127,7 @@ public class ConstantFolder
 		this.optimized = cgen.getJavaClass();
 	}
 
-	
+
 	public void write(String optimisedFilePath)
 	{
 		this.optimize();
