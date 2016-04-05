@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Stack;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
@@ -34,7 +34,7 @@ public class ConstantFolder
 	JavaClass optimized = null;
 
 	Stack<Number> constantStack = null;
-	ArrayList<Number> variables = new ArrayList<Number>(128);
+	HashMap<Integer,Number> variables = null;
 	int offset = 0;
 
 	public ConstantFolder(String classFilePath)
@@ -47,16 +47,13 @@ public class ConstantFolder
 		} catch(IOException e){
 			e.printStackTrace();
 		}
-
-		constantStack = new Stack<Number>();
-
-
 	}
 
 	private void performeArithmetic(InstructionHandle handle)
 	{
-		Number valueOne = constantStack.pop();
 		Number valueTwo = constantStack.pop();
+		Number valueOne = constantStack.pop();
+
 
 		if(handle.getInstruction() instanceof IADD )
 		{
@@ -123,22 +120,22 @@ public class ConstantFolder
 
 		else if(handle.getInstruction() instanceof IDIV )
 		{
-			Number newValue = valueOne.intValue() - valueTwo.intValue();
+			Number newValue = valueOne.intValue() / valueTwo.intValue();
 			constantStack.push(newValue);
 		}
 		else if (handle.getInstruction() instanceof LDIV)
 		{
-			Number newValue = valueOne.longValue() - valueTwo.longValue();
+			Number newValue = valueOne.longValue() / valueTwo.longValue();
 			constantStack.push(newValue);
 		}
 		else if (handle.getInstruction() instanceof FDIV)
 		{
-			Number newValue = valueOne.floatValue() - valueTwo.floatValue();
+			Number newValue = valueOne.floatValue() / valueTwo.floatValue();
 			constantStack.push(newValue);
 		}
 		else if (handle.getInstruction() instanceof DDIV)
 		{
-			Number newValue = valueOne.doubleValue() - valueTwo.doubleValue();
+			Number newValue = valueOne.doubleValue() / valueTwo.doubleValue();
 			constantStack.push(newValue);
 		}
 	}
@@ -147,6 +144,9 @@ public class ConstantFolder
   {
     // Get the Code of the method, which is a collection of bytecode instructions
 		Code methodCode = method.getCode();
+    constantStack = new Stack<Number>();
+    variables = new HashMap<Integer,Number>();
+    offset = 0;
 
 		// Now get the actualy bytecode data in byte array,
 		// and use it to initialise an InstructionList
@@ -159,7 +159,7 @@ public class ConstantFolder
 		System.out.println("New method started: " + method.getName());
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
-			System.out.println(handle.toString());
+			System.out.println(handle + "\tSTACK:" + constantStack);
 
 			boolean isLDC = (handle.getInstruction() instanceof LDC) || (handle.getInstruction() instanceof LDC_W) || (handle.getInstruction() instanceof LDC2_W);
 			boolean isArithmeticInst = (handle.getInstruction() instanceof ArithmeticInstruction);
@@ -172,6 +172,7 @@ public class ConstantFolder
 			{
 				Number value = getConstantValue(handle, cpgen);
 				constantStack.push(value);
+        /*
 				try
 				{
 					instList.delete(handle);
@@ -181,12 +182,13 @@ public class ConstantFolder
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
 	      }
-
+        */
 			}
 			else if(isPush)
 			{
 				Number value = getConstantValue(handle, cpgen);
 				constantStack.push(value);
+        /*
 				try
 				{
 					instList.delete(handle);
@@ -202,27 +204,29 @@ public class ConstantFolder
 				 }
 					//e.printStackTrace();
 				}
+        */
 			}
 			else if(isConst)
 			{
 				Number value = null;
 				if(handle.getInstruction() instanceof ICONST){
-					value = (Number)(((ICONST)handle.getInstruction()).getValue());
+					value = (((ICONST)handle.getInstruction()).getValue());
 				}
 				else if(handle.getInstruction() instanceof FCONST){
-					value = (Number)(((FCONST)handle.getInstruction()).getValue());
+					value = (((FCONST)handle.getInstruction()).getValue());
 				}
 				else if(handle.getInstruction() instanceof LCONST){
-					value = (Number)(((LCONST)handle.getInstruction()).getValue());
+					value = (((LCONST)handle.getInstruction()).getValue());
 				}
 				else if(handle.getInstruction() instanceof DCONST){
-					value = (Number)(((DCONST)handle.getInstruction()).getValue());
+					value = (((DCONST)handle.getInstruction()).getValue());
 				}
 				constantStack.push(value);
 			}
 			else if(isArithmeticInst)
 			{
 					performeArithmetic(handle);
+          /*
 					try
 					{
 						instList.delete(handle);
@@ -232,7 +236,9 @@ public class ConstantFolder
 		        // TODO Auto-generated catch block
 		        e.printStackTrace();
 		      }
-/*
+          */
+
+/*        
 					Number topOfStack = constantStack.pop();
 
 					if(topOfStack instanceof Double)
@@ -259,14 +265,8 @@ public class ConstantFolder
 			{
 				Number value = constantStack.pop();
 				int index = ((StoreInstruction)handle.getInstruction()).getIndex();
-				try{
-				variables.add(index-offset, value);
-			}
-				catch (Exception e)
-				{
-					variables.add(value);
-					offset = index;
-				}
+        variables.put(index, value);
+        /*
 				try
 				{
 					instList.delete(handle);
@@ -276,26 +276,29 @@ public class ConstantFolder
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+        */
 			}
 			else if(isLoad)
 			{
 				int index = ((LoadInstruction)handle.getInstruction()).getIndex();
 				try{
-				Number value = variables.get(index-offset);
+				Number value = variables.get(index);
 				constantStack.push(value);
+        /*
+				try
+				{
+					instList.delete(handle);
+				}
+				catch (TargetLostException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        */
 			}
 			catch(Exception e)
 			{
 
-			}
-			try
-			{
-				instList.delete(handle);
-			}
-			catch (TargetLostException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			}
 
@@ -330,7 +333,6 @@ public class ConstantFolder
       // }
       h2 = h1;
       h1 = handle;
-			System.out.println("STACK:" + constantStack);
     }
 		// setPositions(true) checks whether jump handles
 		// are all within the current method
@@ -362,15 +364,15 @@ public class ConstantFolder
     }
     else if(instruction instanceof LDC2_W)
     {
-      return (Number)(((LDC2_W)handle.getInstruction()).getValue(cpgen));
+      return (((LDC2_W)handle.getInstruction()).getValue(cpgen));
     }
 		else if(instruction instanceof BIPUSH)
 		{
-			return (Number)(((BIPUSH)handle.getInstruction()).getValue());
+			return (((BIPUSH)handle.getInstruction()).getValue());
 		}
 		else if(instruction instanceof SIPUSH)
 		{
-			return (Number)(((SIPUSH)handle.getInstruction()).getValue());
+			return (((SIPUSH)handle.getInstruction()).getValue());
 		}
     return null;
   }
