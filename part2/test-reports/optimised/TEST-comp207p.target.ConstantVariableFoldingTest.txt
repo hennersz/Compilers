@@ -1,7 +1,95 @@
 Testsuite: comp207p.target.ConstantVariableFoldingTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 sec
+Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.017 sec
 
-Testcase: testMethodThree took 0 sec
+Testcase: testMethodThree took 0.002 sec
+	Caused an ERROR
+Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+java.lang.VerifyError: Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodFour took 0 sec
+	Caused an ERROR
+Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+java.lang.VerifyError: Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodOne took 0 sec
+	Caused an ERROR
+Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+java.lang.VerifyError: Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodTwo took 0 sec
+	Caused an ERROR
+Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+java.lang.VerifyError: Expecting a stackmap frame at branch target 10
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @4: if_icmple
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0x0000000: 1224 1204 a400 06a7 0003 ac            
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+

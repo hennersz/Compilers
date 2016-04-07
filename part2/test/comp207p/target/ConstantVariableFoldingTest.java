@@ -8,11 +8,11 @@ import static org.junit.Assert.assertEquals;
  * Test constant variable folding
  */
 public class ConstantVariableFoldingTest {
-
+  
     ConstantVariableFolding cvf = new ConstantVariableFolding();
-
     @Test
     public void testMethodOne(){
+      System.out.println(cvf.methodOne());
         assertEquals(3650, cvf.methodOne());
     }
 

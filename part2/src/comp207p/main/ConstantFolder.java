@@ -49,6 +49,59 @@ public class ConstantFolder
 		}
 	}
 
+  private void deleteInstruction(InstructionHandle handle, InstructionList list)
+  {
+    InstructionHandle next = handle.getNext();
+	  try 
+		{
+		  list.delete(handle);
+		} 
+    catch(TargetLostException e) 
+    {
+			InstructionHandle[] targets = e.getTargets();
+			for(int i=0; i < targets.length; i++) 
+      {
+				InstructionTargeter[] targeters = targets[i].getTargeters();
+				
+				for(int j=0; j < targeters.length; j++)
+					targeters[j].updateTarget(targets[i], next);
+			}
+		}
+  }
+
+  private void conversion(Instruction instruction)
+  {
+    Number value = constantStack.pop();
+    if(instruction instanceof I2D)
+      constantStack.push(value.doubleValue());
+    else if (instruction instanceof I2F)
+      constantStack.push(value.floatValue());
+    else if (instruction instanceof I2L)
+      constantStack.push(value.longValue());
+    else if (instruction instanceof I2S)
+      constantStack.push(value.shortValue());
+    else if (instruction instanceof I2B)
+      constantStack.push(value.byteValue());
+    else if (instruction instanceof L2D)
+      constantStack.push(value.doubleValue());
+    else if (instruction instanceof L2F)
+      constantStack.push(value.floatValue());
+    else if (instruction instanceof L2I)
+      constantStack.push(value.intValue());
+    else if (instruction instanceof D2F)
+      constantStack.push(value.floatValue());
+    else if (instruction instanceof D2L)
+      constantStack.push(value.longValue());
+    else if (instruction instanceof D2I)
+      constantStack.push(value.intValue());
+    else if (instruction instanceof F2D)
+      constantStack.push(value.doubleValue());
+    else if (instruction instanceof F2I)
+      constantStack.push(value.intValue());
+    else if (instruction instanceof F2L)
+      constantStack.push(value.longValue());
+  }
+
 	private void performeArithmetic(InstructionHandle handle)
 	{
 		Number valueTwo = constantStack.pop();
@@ -140,6 +193,30 @@ public class ConstantFolder
 		}
 	}
 
+  private void incrementVar(IINC instruction)
+  {
+    int index = instruction.getIndex();
+    int increment = instruction.getIncrement();
+    Number value = variables.get(index);
+    if(value instanceof Integer)
+    {
+      value = value.intValue() + increment;
+    }
+    else if(value instanceof Float)
+    {
+      value = value.floatValue() + increment;
+    }
+    else if(value instanceof Long)
+    {
+      value = value.longValue() + increment;
+    }
+    else if(value instanceof Double)
+    {
+      value = value.doubleValue() + increment;
+    }
+    variables.put(index, value);
+  }
+
   private void optimizeMethod(ClassGen cgen, ConstantPoolGen cpgen, Method method)
   {
     // Get the Code of the method, which is a collection of bytecode instructions
@@ -168,43 +245,11 @@ public class ConstantFolder
 			boolean isStore = (handle.getInstruction() instanceof StoreInstruction);
 			boolean isLoad = (handle.getInstruction() instanceof LoadInstruction);
 
-			if(isLDC)
+			if(isLDC || isPush)
 			{
 				Number value = getConstantValue(handle, cpgen);
 				constantStack.push(value);
-        /*
-				try
-				{
-					instList.delete(handle);
-				}
-				catch (TargetLostException e)
-	      {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-	      }
-        */
-			}
-			else if(isPush)
-			{
-				Number value = getConstantValue(handle, cpgen);
-				constantStack.push(value);
-        /*
-				try
-				{
-					instList.delete(handle);
-				}
-				catch (TargetLostException e)
-				{
-					// TODO Auto-generated catch block
-					InstructionHandle[] targets = e.getTargets();
-		    for(int i=0; i < targets.length; i++) {
-		      InstructionTargeter[] targeters = targets[i].getTargeters();
-		      for(int j=0; j < targeters.length; j++){
-		         targeters[j].updateTarget(targets[i], null);}
-				 }
-					//e.printStackTrace();
-				}
-        */
+        deleteInstruction(handle, instList);
 			}
 			else if(isConst)
 			{
@@ -222,23 +267,11 @@ public class ConstantFolder
 					value = (((DCONST)handle.getInstruction()).getValue());
 				}
 				constantStack.push(value);
+        deleteInstruction(handle, instList);
 			}
 			else if(isArithmeticInst)
 			{
 					performeArithmetic(handle);
-          /*
-					try
-					{
-						instList.delete(handle);
-					}
-					catch (TargetLostException e)
-		      {
-		        // TODO Auto-generated catch block
-		        e.printStackTrace();
-		      }
-          */
-
-/*        
 					Number topOfStack = constantStack.pop();
 
 					if(topOfStack instanceof Double)
@@ -256,34 +289,45 @@ public class ConstantFolder
 					else if (topOfStack instanceof Float)
 					{
 						instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
-					}*/
+					}
 
-				//	constantStack.push(topOfStack);
-
+					constantStack.push(topOfStack);
+          deleteInstruction(handle, instList);
 			}
 			else if(isStore)
 			{
 				Number value = constantStack.pop();
 				int index = ((StoreInstruction)handle.getInstruction()).getIndex();
         variables.put(index, value);
-        /*
-				try
-				{
-					instList.delete(handle);
-				}
-				catch (TargetLostException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        */
+        deleteInstruction(handle, instList);
 			}
 			else if(isLoad)
 			{
-				int index = ((LoadInstruction)handle.getInstruction()).getIndex();
-				try{
-				Number value = variables.get(index);
-				constantStack.push(value);
+        if (!(handle.getInstruction() instanceof ALOAD))
+        {
+          int index = ((LoadInstruction)handle.getInstruction()).getIndex();
+          Number topOfStack = variables.get(index);
+          System.out.println("Creating constant: " + topOfStack);
+          constantStack.push(topOfStack);
+          if(topOfStack instanceof Double)
+          {
+            instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
+          }
+          else if(topOfStack instanceof Long)
+          {
+            instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
+          }
+          else if (topOfStack instanceof Integer)
+          {
+            instList.insert(handle, new LDC(cpgen.addInteger((Integer)topOfStack)));
+          }
+          else if (topOfStack instanceof Float)
+          {
+            instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
+          }
+
+          deleteInstruction(handle, instList);
+        }
         /*
 				try
 				{
@@ -295,11 +339,6 @@ public class ConstantFolder
 					e.printStackTrace();
 				}
         */
-			}
-			catch(Exception e)
-			{
-
-			}
 			}
 
 
@@ -337,7 +376,7 @@ public class ConstantFolder
 		// setPositions(true) checks whether jump handles
 		// are all within the current method
 		System.out.println("Before");
-		//instList.setPositions(true);
+		instList.setPositions(true);
 		System.out.println("AFTER");
 		System.out.println("Optimised method instructions: " + method.getName());
 		for(InstructionHandle handle : instList.getInstructionHandles())
