@@ -23,6 +23,8 @@ import org.apache.bcel.generic.ICONST;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ArithmeticInstruction;
+import org.apache.bcel.generic.IfInstruction;
+import org.apache.bcel.generic.GotoInstruction;
 
 
 public class ConstantFolder
@@ -52,19 +54,20 @@ public class ConstantFolder
   private void deleteInstruction(InstructionHandle handle, InstructionList list)
   {
     InstructionHandle next = handle.getNext();
-	  try 
+	  try
 		{
 		  list.delete(handle);
-		} 
-    catch(TargetLostException e) 
+		}
+    catch(TargetLostException e)
     {
 			InstructionHandle[] targets = e.getTargets();
-			for(int i=0; i < targets.length; i++) 
+
+			for(int i=0; i < targets.length; i++)
       {
 				InstructionTargeter[] targeters = targets[i].getTargeters();
-				
+
 				for(int j=0; j < targeters.length; j++)
-					targeters[j].updateTarget(targets[i], next);
+					targeters[j].updateTarget(targets[i], null);
 			}
 		}
   }
@@ -101,6 +104,73 @@ public class ConstantFolder
     else if (instruction instanceof F2L)
       constantStack.push(value.longValue());
   }
+
+	private boolean performLogic(InstructionHandle handle)
+	{
+		Instruction inst = handle.getInstruction();
+		if(inst instanceof IFLE)
+		{
+			Number value1 = constantStack.pop();
+			if((Integer)value1 <= 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+
+		Number value1 = constantStack.pop();
+		Number value2 = constantStack.pop();
+
+		//InstructionHandle target = handle.getTargets()[0];
+		boolean shouldGoToTarget = false;
+		if(inst instanceof IF_ICMPEQ)
+		{
+			if((Integer)value1 == (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		else if(inst instanceof IF_ICMPGE)
+		{
+			if((Integer)value1 >= (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		else if(inst instanceof IF_ICMPGT)
+		{
+			if((Integer)value1 > (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		else if(inst instanceof IF_ICMPLE)
+		{
+			if((Integer)value1 <= (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		else if(inst instanceof IF_ICMPLT)
+		{
+			if((Integer)value1 < (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		else if(inst instanceof IF_ICMPNE)
+		{
+			if((Integer)value1 != (Integer)value2)
+			{
+				shouldGoToTarget = true;
+			}
+		}
+		return shouldGoToTarget;
+	}
 
 	private void performeArithmetic(InstructionHandle handle)
 	{
@@ -234,8 +304,14 @@ public class ConstantFolder
 		InstructionHandle h1 = null, h2 = null;
 		//InstructionHandle is a wrapper for actual Instructions
 		System.out.println("New method started: " + method.getName());
+
+		boolean justFinishedDeletingIf = false;
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
+			if(handle.getInstruction() == null)
+			{
+				continue;
+			}
 			System.out.println(handle + "\tSTACK:" + constantStack);
 
 			boolean isLDC = (handle.getInstruction() instanceof LDC) || (handle.getInstruction() instanceof LDC_W) || (handle.getInstruction() instanceof LDC2_W);
@@ -244,12 +320,64 @@ public class ConstantFolder
 			boolean isConst = (handle.getInstruction() instanceof ICONST || handle.getInstruction() instanceof FCONST || handle.getInstruction() instanceof LCONST || handle.getInstruction() instanceof DCONST);
 			boolean isStore = (handle.getInstruction() instanceof StoreInstruction);
 			boolean isLoad = (handle.getInstruction() instanceof LoadInstruction);
+			boolean isComparison = (handle.getInstruction() instanceof IfInstruction);
+			boolean isLongComparison = (handle.getInstruction() instanceof LCMP);
 
 			if(isLDC || isPush)
 			{
 				Number value = getConstantValue(handle, cpgen);
 				constantStack.push(value);
         deleteInstruction(handle, instList);
+			}
+			else if(isComparison)
+			{
+				IfInstruction inst = (IfInstruction)handle.getInstruction();
+				System.out.println("IfStatement Target" + inst.getTarget());
+				if(performLogic(handle) == false)
+				{
+					InstructionHandle handlePrev = handle.getPrev();
+					try
+					{
+						instList.delete(handle, inst.getTarget().getPrev());
+					}
+					catch(Exception e)
+					{
+
+					}
+					justFinishedDeletingIf = true;
+				}
+				else
+				{
+					try
+					{
+					InstructionHandle target = inst.getTarget();
+					System.out.println("ELSE branch deleting" + handle + target);
+					deleteInstruction(handle, instList);
+					deleteInstruction(target, instList);
+					justFinishedDeletingIf = true;
+					}
+					catch(Exception e)
+					{
+						System.out.println("Exception ELSE branch");
+					}
+				}
+			}
+			else if(isLongComparison)
+			{
+				Number value1 = constantStack.pop();
+				Number value2 = constantStack.pop();
+				Number toPush = null;
+				if((Long)value1 > (Long)value2)
+				{
+					toPush = 1;
+				}
+				else if((Long) value1 < (Long)value2)
+				{
+					toPush = -1;
+				}
+				else{toPush = 0;}
+				constantStack.push(toPush);
+				deleteInstruction(handle, instList);
 			}
 			else if(isConst)
 			{
@@ -267,7 +395,17 @@ public class ConstantFolder
 					value = (((DCONST)handle.getInstruction()).getValue());
 				}
 				constantStack.push(value);
-        deleteInstruction(handle, instList);
+				System.out.println("Pushed: " + value);
+				if(!justFinishedDeletingIf)
+				{
+				deleteInstruction(handle, instList);
+
+				}
+				else
+				{
+					System.out.println("Kept CONST instruction for if statements to function");
+					justFinishedDeletingIf = false;
+				}
 			}
 			else if(isArithmeticInst)
 			{
@@ -376,12 +514,20 @@ public class ConstantFolder
 		// setPositions(true) checks whether jump handles
 		// are all within the current method
 		System.out.println("Before");
-		instList.setPositions(true);
+		try
+		{
+			instList.setPositions(true);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Problem setting positions");
+		}
 		System.out.println("AFTER");
 		System.out.println("Optimised method instructions: " + method.getName());
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
 			System.out.println(handle.toString());
+			//System.out.println(handle.getInstruction().getTargets());
 		}
 
 		// set max stack/local
