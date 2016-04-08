@@ -3,132 +3,132 @@ Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.017 sec
 
 Testcase: testMethodThree took 0.001 sec
 	Caused an ERROR
-Bad local variable type
+Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
-java.lang.VerifyError: Bad local variable type
+java.lang.VerifyError: Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
 	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
 
 Testcase: testMethodFour took 0 sec
 	Caused an ERROR
-Bad local variable type
+Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
-java.lang.VerifyError: Bad local variable type
+java.lang.VerifyError: Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
 	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
 
 Testcase: testMethodOne took 0 sec
 	Caused an ERROR
-Bad local variable type
+Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
-java.lang.VerifyError: Bad local variable type
+java.lang.VerifyError: Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
 	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
 
-Testcase: testMethodTwo took 0 sec
+Testcase: testMethodTwo took 0.001 sec
 	Caused an ERROR
-Bad local variable type
+Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
-java.lang.VerifyError: Bad local variable type
+java.lang.VerifyError: Operand stack underflow
 Exception Details:
   Location:
-    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+    comp207p/target/ConstantVariableFolding.methodTwo()D @4: i2d
   Reason:
-    Type top (current frame, locals[2]) is not assignable to integer
+    Attempt to pop empty stack.
   Current Frame:
-    bci: @7
+    bci: @4
     flags: { }
-    locals: { 'comp207p/target/ConstantVariableFolding', integer }
-    stack: { integer, integer }
+    locals: { 'comp207p/target/ConstantVariableFolding', double, double_2nd }
+    stack: { }
   Bytecode:
-    0x0000000: 1130 393c 1204 1b1c 03ac               
+    0x0000000: 1400 0248 8714 0020 af                 
 
 	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)

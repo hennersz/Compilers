@@ -442,7 +442,8 @@ public class ConstantFolder
 			}
 			else if(isStore)
 			{
-				Number value = constantStack.pop().getFirst();
+        Tuple<Number, InstructionHandle> tuple = constantStack.pop();
+				Number value = tuple.getFirst();
 				int index = ((StoreInstruction)handle.getInstruction()).getIndex();
         variables.put(index, value);
 			}
@@ -452,6 +453,7 @@ public class ConstantFolder
         {
           if (handle.getPrev().getInstruction() instanceof StoreInstruction)
           {
+            deleteInstruction(handle.getPrev().getPrev(), instList);
             deleteInstruction(handle.getPrev(), instList);
           } 
           int index = ((LoadInstruction)handle.getInstruction()).getIndex();
