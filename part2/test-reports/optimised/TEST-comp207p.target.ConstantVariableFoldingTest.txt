@@ -1,10 +1,135 @@
 Testsuite: comp207p.target.ConstantVariableFoldingTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 sec
-------------- Standard Output ---------------
-3650
-------------- ---------------- ---------------
+Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.017 sec
 
 Testcase: testMethodThree took 0.001 sec
+	Caused an ERROR
+Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+java.lang.VerifyError: Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodFour took 0 sec
+	Caused an ERROR
+Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+java.lang.VerifyError: Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodOne took 0 sec
+	Caused an ERROR
+Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+java.lang.VerifyError: Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+
 Testcase: testMethodTwo took 0 sec
+	Caused an ERROR
+Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+java.lang.VerifyError: Bad local variable type
+Exception Details:
+  Location:
+    comp207p/target/ConstantVariableFolding.methodThree()Z @7: iload_2
+  Reason:
+    Type top (current frame, locals[2]) is not assignable to integer
+  Current Frame:
+    bci: @7
+    flags: { }
+    locals: { 'comp207p/target/ConstantVariableFolding', integer }
+    stack: { integer, integer }
+  Bytecode:
+    0x0000000: 1130 393c 1204 1b1c 03ac               
+
+	at comp207p.target.ConstantVariableFoldingTest.<init>(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+

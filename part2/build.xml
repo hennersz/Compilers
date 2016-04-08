@@ -24,7 +24,7 @@
   <dirname property="basedir" file="${ant.file}"/>
   
   <property name="build.dir" value="${basedir}/build"/>
-  <property name="classes.dir" value="${basedir}/build/classes"/>
+  <property name="classes.dir" value="${basedir}/build/classes/target"/>
   <property name="tests.dir" value="${basedir}/build/test"/>
   <property name="testreports.original.dir" value="${basedir}/test-reports/original"/>
   <property name="testreports.optimised.dir" value="${basedir}/test-reports/optimised"/>

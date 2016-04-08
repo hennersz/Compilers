@@ -34,8 +34,7 @@ public class ConstantFolder
 
 	JavaClass original = null;
 	JavaClass optimized = null;
-
-	Stack<Number> constantStack = null;
+	Stack<Tuple<Number, InstructionHandle>> constantStack = null;
 	HashMap<Integer,Number> variables = null;
 	int offset = 0;
 
@@ -72,37 +71,38 @@ public class ConstantFolder
 		}
   }
 
-  private void conversion(Instruction instruction)
+  private void conversion(InstructionHandle handle)
   {
-    Number value = constantStack.pop();
+    Instruction instruction = handle.getInstruction();
+    Number value = constantStack.pop().getFirst();
     if(instruction instanceof I2D)
-      constantStack.push(value.doubleValue());
+      constantStack.push(new Tuple(value.doubleValue(), handle));
     else if (instruction instanceof I2F)
-      constantStack.push(value.floatValue());
+      constantStack.push(new Tuple(value.floatValue(), handle));
     else if (instruction instanceof I2L)
-      constantStack.push(value.longValue());
+      constantStack.push(new Tuple(value.longValue(), handle));
     else if (instruction instanceof I2S)
-      constantStack.push(value.shortValue());
+      constantStack.push(new Tuple(value.shortValue(), handle));
     else if (instruction instanceof I2B)
-      constantStack.push(value.byteValue());
+      constantStack.push(new Tuple(value.byteValue(), handle));
     else if (instruction instanceof L2D)
-      constantStack.push(value.doubleValue());
+      constantStack.push(new Tuple(value.doubleValue(), handle));
     else if (instruction instanceof L2F)
-      constantStack.push(value.floatValue());
+      constantStack.push(new Tuple(value.floatValue(), handle));
     else if (instruction instanceof L2I)
-      constantStack.push(value.intValue());
+      constantStack.push(new Tuple(value.intValue(), handle));
     else if (instruction instanceof D2F)
-      constantStack.push(value.floatValue());
+      constantStack.push(new Tuple(value.floatValue(), handle));
     else if (instruction instanceof D2L)
-      constantStack.push(value.longValue());
+      constantStack.push(new Tuple(value.longValue(), handle));
     else if (instruction instanceof D2I)
-      constantStack.push(value.intValue());
+      constantStack.push(new Tuple(value.intValue(), handle));
     else if (instruction instanceof F2D)
-      constantStack.push(value.doubleValue());
+      constantStack.push(new Tuple(value.doubleValue(), handle));
     else if (instruction instanceof F2I)
-      constantStack.push(value.intValue());
+      constantStack.push(new Tuple(value.intValue(), handle));
     else if (instruction instanceof F2L)
-      constantStack.push(value.longValue());
+      constantStack.push(new Tuple(value.longValue(), handle));
   }
 
 	private boolean performLogic(InstructionHandle handle)
@@ -110,7 +110,7 @@ public class ConstantFolder
 		Instruction inst = handle.getInstruction();
 		if(inst instanceof IFLE)
 		{
-			Number value1 = constantStack.pop();
+			Number value1 = constantStack.pop().getFirst();
 			if((Integer)value1 <= 0)
 			{
 				return true;
@@ -122,8 +122,8 @@ public class ConstantFolder
 		}
 
 
-		Number value1 = constantStack.pop();
-		Number value2 = constantStack.pop();
+		Number value1 = constantStack.pop().getFirst();
+		Number value2 = constantStack.pop().getFirst();
 
 		//InstructionHandle target = handle.getTargets()[0];
 		boolean shouldGoToTarget = false;
@@ -172,94 +172,98 @@ public class ConstantFolder
 		return shouldGoToTarget;
 	}
 
-	private void performeArithmetic(InstructionHandle handle)
+	private void performeArithmetic(InstructionHandle handle, InstructionList instList)
 	{
-		Number valueTwo = constantStack.pop();
-		Number valueOne = constantStack.pop();
+		Tuple<Number, InstructionHandle> tuple1 = constantStack.pop();
+		Tuple<Number, InstructionHandle> tuple2 = constantStack.pop();
+		Number valueTwo = tuple1.getFirst();
+		Number valueOne = tuple2.getFirst();
+		deleteInstruction(tuple1.getSecond(), instList);
+		deleteInstruction(tuple2.getSecond(), instList);
 
 
 		if(handle.getInstruction() instanceof IADD )
 		{
 			Number newValue = valueOne.intValue() + valueTwo.intValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof LADD)
 		{
 			Number newValue = valueOne.longValue() + valueTwo.longValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof FADD)
 		{
 			Number newValue = valueOne.floatValue() + valueTwo.floatValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof DADD)
 		{
 			Number newValue = valueOne.doubleValue() + valueTwo.doubleValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 
 		else if(handle.getInstruction() instanceof IMUL )
 		{
 			Number newValue = valueOne.intValue() * valueTwo.intValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof LMUL)
 		{
 			Number newValue = valueOne.longValue() * valueTwo.longValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof FMUL)
 		{
 			Number newValue = valueOne.floatValue() * valueTwo.floatValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof DMUL)
 		{
 			Number newValue = valueOne.doubleValue() * valueTwo.doubleValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 
 		else if(handle.getInstruction() instanceof ISUB )
 		{
 			Number newValue = valueOne.intValue() - valueTwo.intValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof LSUB)
 		{
 			Number newValue = valueOne.longValue() - valueTwo.longValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof FSUB)
 		{
 			Number newValue = valueOne.floatValue() - valueTwo.floatValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof DSUB)
 		{
 			Number newValue = valueOne.doubleValue() - valueTwo.doubleValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 
 		else if(handle.getInstruction() instanceof IDIV )
 		{
 			Number newValue = valueOne.intValue() / valueTwo.intValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof LDIV)
 		{
 			Number newValue = valueOne.longValue() / valueTwo.longValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof FDIV)
 		{
 			Number newValue = valueOne.floatValue() / valueTwo.floatValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 		else if (handle.getInstruction() instanceof DDIV)
 		{
 			Number newValue = valueOne.doubleValue() / valueTwo.doubleValue();
-			constantStack.push(newValue);
+			constantStack.push(new Tuple(newValue, handle));
 		}
 	}
 
@@ -291,7 +295,7 @@ public class ConstantFolder
   {
     // Get the Code of the method, which is a collection of bytecode instructions
 		Code methodCode = method.getCode();
-    constantStack = new Stack<Number>();
+    constantStack = new Stack<Tuple<Number, InstructionHandle>>();
     variables = new HashMap<Integer,Number>();
     offset = 0;
 
@@ -326,8 +330,7 @@ public class ConstantFolder
 			if(isLDC || isPush)
 			{
 				Number value = getConstantValue(handle, cpgen);
-				constantStack.push(value);
-        deleteInstruction(handle, instList);
+				constantStack.push(new Tuple(value, handle));
 			}
 			else if(isComparison)
 			{
@@ -364,8 +367,12 @@ public class ConstantFolder
 			}
 			else if(isLongComparison)
 			{
-				Number value1 = constantStack.pop();
-				Number value2 = constantStack.pop();
+				Tuple<Number, InstructionHandle> tuple1 = constantStack.pop();
+				Tuple<Number, InstructionHandle> tuple2 = constantStack.pop();
+				Number value1 = tuple1.getFirst();
+				Number value2 = tuple2.getFirst();
+				//deleteInstruction(tuple1.getSecond(), instList);
+				//deleteInstruction(tuple2.getSecond(), instList);
 				Number toPush = null;
 				if((Long)value1 > (Long)value2)
 				{
@@ -376,8 +383,8 @@ public class ConstantFolder
 					toPush = -1;
 				}
 				else{toPush = 0;}
-				constantStack.push(toPush);
-				deleteInstruction(handle, instList);
+				constantStack.push(new Tuple(toPush, handle));
+				//deleteInstruction(handle, instList);
 			}
 			else if(isConst)
 			{
@@ -394,11 +401,11 @@ public class ConstantFolder
 				else if(handle.getInstruction() instanceof DCONST){
 					value = (((DCONST)handle.getInstruction()).getValue());
 				}
-				constantStack.push(value);
+				constantStack.push(new Tuple(value, handle));
 				System.out.println("Pushed: " + value);
 				if(!justFinishedDeletingIf)
 				{
-				deleteInstruction(handle, instList);
+				//deleteInstruction(handle, instList);
 
 				}
 				else
@@ -409,107 +416,51 @@ public class ConstantFolder
 			}
 			else if(isArithmeticInst)
 			{
-					performeArithmetic(handle);
-					Number topOfStack = constantStack.pop();
-
+					performeArithmetic(handle, instList);
+					Tuple<Number, InstructionHandle> tuple = constantStack.pop();
+					Number topOfStack = tuple.getFirst();
+					InstructionHandle newInstruction = null;
 					if(topOfStack instanceof Double)
 					{
-						instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
+						newInstruction = instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
 					}
 					else if(topOfStack instanceof Long)
 					{
-						instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
+						newInstruction = instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
 					}
 					else if (topOfStack instanceof Integer)
 					{
-						instList.insert(handle, new LDC(cpgen.addInteger((Integer)topOfStack)));
+						newInstruction = instList.insert(handle, new LDC(cpgen.addInteger((Integer)topOfStack)));
 					}
 					else if (topOfStack instanceof Float)
 					{
-						instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
+						newInstruction = instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
 					}
 
-					constantStack.push(topOfStack);
+					constantStack.push(new Tuple(topOfStack, newInstruction));
           deleteInstruction(handle, instList);
 			}
 			else if(isStore)
 			{
-				Number value = constantStack.pop();
+				Number value = constantStack.pop().getFirst();
 				int index = ((StoreInstruction)handle.getInstruction()).getIndex();
         variables.put(index, value);
-        deleteInstruction(handle, instList);
 			}
 			else if(isLoad)
 			{
         if (!(handle.getInstruction() instanceof ALOAD))
         {
+          if (handle.getPrev().getInstruction() instanceof StoreInstruction)
+          {
+            deleteInstruction(handle.getPrev(), instList);
+          } 
           int index = ((LoadInstruction)handle.getInstruction()).getIndex();
           Number topOfStack = variables.get(index);
-          System.out.println("Creating constant: " + topOfStack);
-          constantStack.push(topOfStack);
-          if(topOfStack instanceof Double)
-          {
-            instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
-          }
-          else if(topOfStack instanceof Long)
-          {
-            instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
-          }
-          else if (topOfStack instanceof Integer)
-          {
-            instList.insert(handle, new LDC(cpgen.addInteger((Integer)topOfStack)));
-          }
-          else if (topOfStack instanceof Float)
-          {
-            instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
-          }
-
-          deleteInstruction(handle, instList);
+          constantStack.push(new Tuple(topOfStack, handle));
         }
-        /*
-				try
-				{
-					instList.delete(handle);
-				}
-				catch (TargetLostException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        */
+
 			}
 
-
-
-
-
-			//
-			//
-      // if(h1 != null && h2 != null)
-      // {
-      //   if(handle.getInstruction() instanceof  IADD &&
-      //       h1.getInstruction() instanceof LDC &&
-      //       h2.getInstruction() instanceof LDC )
-      //   {
-      //     //int value = ((Integer)(((LDC)h1.getInstruction()).getValue(cpgen))+ (Integer)(((LDC)h2.getInstruction()).getValue(cpgen)));
-			// 		Number value = getConstantValue(handle, cpgen);
-      //     instList.insert(handle, new LDC(cpgen.addInteger(value)));
-      //     try
-      //     {
-      //       // delete the old one
-      //       instList.delete(handle);
-      //       instList.delete(h1);
-      //       instList.delete(h2);
-      //     }
-      //     catch (TargetLostException e)
-      //     {
-      //       // TODO Auto-generated catch block
-      //       e.printStackTrace();
-      //     }
-      //   }
-      // }
-      h2 = h1;
-      h1 = handle;
     }
 		// setPositions(true) checks whether jump handles
 		// are all within the current method
