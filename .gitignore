@@ -1,7 +1,7 @@
 # Part 1
 
 # Compiled files
-part1/bin/
+part1/bin/*
 
 # Lexer java file
 part1/src/Lexer.java
@@ -14,7 +14,7 @@ part1/src/sym.java
 part1/result.csv
 
 # Part 2
-part2/test-reports
+part2/test-reports/*
 
 # bytecode files
 *.class
