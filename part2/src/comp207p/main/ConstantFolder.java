@@ -49,6 +49,7 @@ public class ConstantFolder {
     }
   }
 
+  // Tries to delete the instruction and removes any jumps to it
   private void deleteInstruction(InstructionHandle handle, InstructionList list) {
     InstructionHandle next = handle.getNext();
     try {
@@ -97,22 +98,18 @@ public class ConstantFolder {
       constantStack.push(value.longValue());
   }
 
+  // Returns whether the condition in the if statement
+  // is true of false
   private boolean performLogic(InstructionHandle handle) {
     Instruction inst = handle.getInstruction();
     if(inst instanceof IFLE) {
       Number value1 = constantStack.pop();
-      if((Integer)value1 <= 0) {
-        return true;
-      } else {
-        return false;
-      }
+      return (Integer)value1 <= 0;
     }
-
 
     Number value1 = constantStack.pop();
     Number value2 = constantStack.pop();
 
-    //InstructionHandle target = handle.getTargets()[0];
     boolean shouldGoToTarget = false;
     if(inst instanceof IF_ICMPEQ) {
       if((Integer)value1 == (Integer)value2) {
@@ -142,6 +139,8 @@ public class ConstantFolder {
     return shouldGoToTarget;
   }
 
+  // Performs the arithmetic operation and pushes the value
+  // to the constantpool
   private void performeArithmetic(InstructionHandle handle) {
     Number valueTwo = constantStack.pop();
     Number valueOne = constantStack.pop();
@@ -226,7 +225,6 @@ public class ConstantFolder {
 
     // Initialise a method generator with the original method as the baseline
     MethodGen methodGen = new MethodGen(method.getAccessFlags(), method.getReturnType(), method.getArgumentTypes(), null, method.getName(), cgen.getClassName(), instList, cpgen);
-    InstructionHandle h1 = null, h2 = null;
     //InstructionHandle is a wrapper for actual Instructions
     System.out.println("New method started: " + method.getName());
 
@@ -250,11 +248,10 @@ public class ConstantFolder {
         Number value = getConstantValue(handle, cpgen);
         constantStack.push(value);
         deleteInstruction(handle, instList);
-      }
-      else if(isComparison) {
+      } else if(isComparison) {
         IfInstruction inst = (IfInstruction)handle.getInstruction();
         System.out.println("IfStatement Target" + inst.getTarget());
-        if(performLogic(handle) == false) {
+        if(!performLogic(handle)) {
           InstructionHandle handlePrev = handle.getPrev();
           try {
             instList.delete(handle, inst.getTarget().getPrev());
@@ -346,16 +343,13 @@ public class ConstantFolder {
           deleteInstruction(handle, instList);
         }
       }
-      h2 = h1;
-      h1 = handle;
     }
     // setPositions(true) checks whether jump handles
     // are all within the current method
     System.out.println("Before");
     try {
       instList.setPositions(true);
-    }
-    catch(Exception e) {
+    } catch(Exception e) {
       System.out.println("Problem setting positions");
     }
     System.out.println("AFTER");
