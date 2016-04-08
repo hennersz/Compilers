@@ -1,4 +1,8 @@
 Testsuite: comp207p.target.SimpleFoldingTest
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 sec
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 sec
+>>>>>>> 3680fa4579ae9112fd7b7246704807a157daf1a7
 
-Testcase: testSimple took 0.002 sec
+Testcase: testSimple took 0.003 sec

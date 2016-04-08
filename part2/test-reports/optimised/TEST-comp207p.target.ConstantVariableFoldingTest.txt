@@ -1,10 +1,14 @@
 Testsuite: comp207p.target.ConstantVariableFoldingTest
+<<<<<<< HEAD
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 sec
+=======
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 sec
+>>>>>>> 3680fa4579ae9112fd7b7246704807a157daf1a7
 ------------- Standard Output ---------------
 3650
 ------------- ---------------- ---------------
 
-Testcase: testMethodThree took 0.001 sec
+Testcase: testMethodThree took 0 sec
 Testcase: testMethodFour took 0 sec
 Testcase: testMethodOne took 0 sec
 Testcase: testMethodTwo took 0 sec

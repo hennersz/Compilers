@@ -287,6 +287,36 @@ public class ConstantFolder
     variables.put(index, value);
   }
 
+	private void removeLDCs(InstructionHandle handle, InstructionList instList, int toDelete)
+	{
+		int times = 0;
+		InstructionHandle handleToCheck = handle.getPrev();
+		//System.out.println(instList);
+		while(times != toDelete){
+
+			if((handleToCheck.getInstruction() instanceof LDC) || (handleToCheck.getInstruction() instanceof LDC_W) || (handleToCheck.getInstruction() instanceof LDC2_W))
+			{
+				times++;
+				if(times < toDelete)
+				{
+				handleToCheck = handleToCheck.getPrev();
+				deleteInstruction(handleToCheck.getNext(), instList);
+				continue;
+				}
+				else
+				{
+					deleteInstruction(handleToCheck, instList);
+				}
+
+			}
+			else if(handleToCheck.getPrev() == null)
+			{
+				break;
+			}
+			handleToCheck = handleToCheck.getPrev();
+		}
+	}
+
   private void optimizeMethod(ClassGen cgen, ConstantPoolGen cpgen, Method method)
   {
     // Get the Code of the method, which is a collection of bytecode instructions
@@ -306,6 +336,8 @@ public class ConstantFolder
 		System.out.println("New method started: " + method.getName());
 
 		boolean justFinishedDeletingIf = false;
+		boolean isLoop = false;
+		int constants = 0;
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
 			if(handle.getInstruction() == null)
@@ -322,6 +354,8 @@ public class ConstantFolder
 			boolean isLoad = (handle.getInstruction() instanceof LoadInstruction);
 			boolean isComparison = (handle.getInstruction() instanceof IfInstruction);
 			boolean isLongComparison = (handle.getInstruction() instanceof LCMP);
+			boolean isGoto = (handle.getInstruction() instanceof GotoInstruction);
+			boolean isConversion = (handle.getInstruction() instanceof I2D);
 
 			if(isLDC || isPush)
 			{
@@ -329,8 +363,54 @@ public class ConstantFolder
 				constantStack.push(value);
         deleteInstruction(handle, instList);
 			}
+			else if(isConversion)
+			{
+				deleteInstruction(handle, instList);
+			}
+			else if(isGoto)
+			{
+				GotoInstruction inst = (GotoInstruction)handle.getInstruction();
+				InstructionHandle instH = inst.getTarget();
+				if(instH == handle.getNext())
+				{
+					System.out.println("Removed goto");
+					deleteInstruction(handle, instList);
+				}
+			}
 			else if(isComparison)
 			{
+				InstructionHandle handleToCheck = handle;
+				InstructionHandle handleToUseLater = handle;
+				while((!(handleToCheck.getInstruction() instanceof GOTO)))
+				{
+					handleToCheck = handleToCheck.getNext();
+					//System.out.println(handleToCheck);
+				}
+
+				System.out.println("OUT");
+				if(handleToCheck.getInstruction() instanceof GOTO)
+				{
+					System.out.println("IN");
+					InstructionHandle targetHandle = ((GotoInstruction)handleToCheck.getInstruction()).getTarget();
+					//System.out.println(targetHandle);
+					if (targetHandle == null) {
+						targetHandle = handle.getNext();
+						int firstIndex = targetHandle.getPosition();
+						int secondIndex = handleToCheck.getPosition();
+						if (secondIndex > firstIndex) {
+							((GotoInstruction)(handleToCheck.getInstruction())).setTarget(handle);
+							System.out.println("Found loop");
+							continue;
+						}
+					}
+
+				}
+				if(constants >= 2)
+					{removeLDCs(handle, instList, 2);}
+				else
+				{
+					removeLDCs(handle, instList, 1);
+				}
 				IfInstruction inst = (IfInstruction)handle.getInstruction();
 				System.out.println("IfStatement Target" + inst.getTarget());
 				if(performLogic(handle) == false)
@@ -361,6 +441,7 @@ public class ConstantFolder
 						System.out.println("Exception ELSE branch");
 					}
 				}
+
 			}
 			else if(isLongComparison)
 			{
@@ -398,7 +479,7 @@ public class ConstantFolder
 				System.out.println("Pushed: " + value);
 				if(!justFinishedDeletingIf)
 				{
-				deleteInstruction(handle, instList);
+				//deleteInstruction(handle, instList);
 
 				}
 				else
@@ -409,6 +490,12 @@ public class ConstantFolder
 			}
 			else if(isArithmeticInst)
 			{
+				if(constants >= 2)
+					{removeLDCs(handle, instList, 2);}
+				else
+				{
+					removeLDCs(handle, instList, 1);
+				}
 					performeArithmetic(handle);
 					Number topOfStack = constantStack.pop();
 
@@ -446,6 +533,7 @@ public class ConstantFolder
           int index = ((LoadInstruction)handle.getInstruction()).getIndex();
           Number topOfStack = variables.get(index);
           System.out.println("Creating constant: " + topOfStack);
+					constants++;
           constantStack.push(topOfStack);
           if(topOfStack instanceof Double)
           {
@@ -523,6 +611,9 @@ public class ConstantFolder
 			System.out.println("Problem setting positions");
 		}
 		System.out.println("AFTER");
+
+
+
 		System.out.println("Optimised method instructions: " + method.getName());
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
