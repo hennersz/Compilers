@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
@@ -317,6 +318,33 @@ public class ConstantFolder
 		}
 	}
 
+	private ArrayList<Integer> checkForForLoops(InstructionList instList)
+	{
+		ArrayList<Integer> arrayOfPositions = new ArrayList<Integer>();
+
+		for(InstructionHandle handle : instList.getInstructionHandles())
+		{
+			Instruction inst = handle.getInstruction();
+
+			if(inst instanceof IINC)
+			{
+				InstructionHandle nextInstructionHandle = handle.getNext();
+				Instruction nextInstruction = nextInstructionHandle.getInstruction();
+				Integer index = ((IINC)inst).getIndex();
+				if(nextInstruction instanceof GotoInstruction)
+				{
+					InstructionHandle targetHandle = ((GotoInstruction)nextInstruction).getTarget();
+					Integer preservationStart = targetHandle.getPosition()-2;
+					arrayOfPositions.add(preservationStart);
+					arrayOfPositions.add(nextInstructionHandle.getPosition());
+					arrayOfPositions.add(index);
+				}
+			}
+
+		}
+		return arrayOfPositions;
+	}
+
   private void optimizeMethod(ClassGen cgen, ConstantPoolGen cpgen, Method method)
   {
     // Get the Code of the method, which is a collection of bytecode instructions
@@ -337,9 +365,25 @@ public class ConstantFolder
 
 		boolean justFinishedDeletingIf = false;
 		boolean isLoop = false;
+		boolean skipNextArith = false;
 		int constants = 0;
+		ArrayList<Integer> arrayForLoops = checkForForLoops(instList); //Analyses the bytecode to detect all loops and pushes them in the following format [positionOfStartInstruction, positionOfEndInstruction, indexOfIncrementedVariable,...]
 		for(InstructionHandle handle : instList.getInstructionHandles())
     {
+			boolean inTheLoop = false;
+			for(int i = 0; i < arrayForLoops.size(); i+=3)
+			{
+				Integer one = arrayForLoops.get(i);
+				Integer two = arrayForLoops.get(i+1);
+				if(handle.getPosition() <= two && handle.getPosition() >= one)
+				{
+					inTheLoop = true; //Checks whether in the loop
+				}
+
+
+			}
+
+
 			if(handle.getInstruction() == null)
 			{
 				continue;
@@ -356,6 +400,91 @@ public class ConstantFolder
 			boolean isLongComparison = (handle.getInstruction() instanceof LCMP);
 			boolean isGoto = (handle.getInstruction() instanceof GotoInstruction);
 			boolean isConversion = (handle.getInstruction() instanceof I2D);
+			if(!isArithmeticInst && !isStore)
+			{
+				skipNextArith = false; //Makes sure the code doesn't skip an incorrect instruction.
+			}
+			if(inTheLoop == true)
+			{
+				if(isLoad)
+				{
+					boolean removeLoad = true;
+					for(int i = 0; i < arrayForLoops.size(); i+=3)
+					{
+						Integer index = arrayForLoops.get(i+2);
+						int nowIndex = ((LoadInstruction)handle.getInstruction()).getIndex();
+
+						if(index == nowIndex)
+						{
+							removeLoad = false;
+							skipNextArith = true;
+						}
+					}
+					if(removeLoad == true)
+					{
+						if (!(handle.getInstruction() instanceof ALOAD))
+						{
+							int index = ((LoadInstruction)handle.getInstruction()).getIndex();
+							Number topOfStack = variables.get(index);
+
+							constantStack.push(topOfStack);
+							if(topOfStack instanceof Double)
+							{
+								instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
+							}
+							else if(topOfStack instanceof Long)
+							{
+								instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
+							}
+							else if (topOfStack instanceof Integer)
+							{
+								handle.setInstruction(new LDC(cpgen.addInteger((Integer)topOfStack)));
+							}
+							else if (topOfStack instanceof Float)
+							{
+								instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
+							}
+
+						}
+					}
+				}
+				if(isArithmeticInst && (skipNextArith == false))
+				{
+					if(constants >= 2)
+						{removeLDCs(handle, instList, 1);}
+					else
+					{
+						removeLDCs(handle, instList, 0);
+					}
+						performeArithmetic(handle);
+						Number topOfStack = constantStack.pop();
+						constants++;
+						if(topOfStack instanceof Double)
+						{
+							instList.insert(handle, new LDC2_W(cpgen.addDouble((Double)topOfStack)));
+						}
+						else if(topOfStack instanceof Long)
+						{
+							instList.insert(handle, new LDC2_W(cpgen.addLong((Long)topOfStack)));
+						}
+						else if (topOfStack instanceof Integer)
+						{
+							instList.insert(handle, new LDC(cpgen.addInteger((Integer)topOfStack)));
+						}
+						else if (topOfStack instanceof Float)
+						{
+							instList.insert(handle, new LDC(cpgen.addFloat((Float)topOfStack)));
+						}
+
+						constantStack.push(topOfStack);
+	          deleteInstruction(handle, instList);
+				}
+				if(isArithmeticInst && (skipNextArith == true))
+				{
+					skipNextArith = false;
+				}
+				continue;
+			}
 
 			if(isLDC || isPush)
 			{
